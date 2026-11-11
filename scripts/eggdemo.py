@@ -35,6 +35,8 @@ def load(zpath, layout):
 
 
 def main():
+    if len(sys.argv) != 2 or sys.argv[1] in ('-h', '--help'):
+        print(__doc__); return 0 if len(sys.argv) == 2 else 2
     zpath = sys.argv[1]
     names = {n.rsplit('/', 1)[-1] for n in zipfile.ZipFile(zpath).namelist()}
     if 'hss-01.58' in names:
