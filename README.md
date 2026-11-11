@@ -72,7 +72,8 @@ Part II hides the same idea more carefully:
   trap disarmed. Both high (what an unconnected TTL input usually reads): the game resets itself. Exactly one
   high: the trap stays armed.
 
-  Taito's own schematic of the I/O board (PV070010, "P.T-GAME P.C. BOARD") confirms it: the port is read
+  Taito's own schematic of the I/O board (PV070010, "P.T-GAME P.C. BOARD", from
+  [robotron-2084.co.uk](https://www.robotron-2084.co.uk/hardware/boardset/taito-space-invaders-part-ii-3-layer-board-stack)) confirms it: the port is read
   through four 74LS153 multiplexers, and every unused input has a 1k pull-up to +5V – except pin 10 of the
   multiplexers at positions 4 and 9, which also have a **ground link on the same node**. Those are the two lines
   the code checks. (Bit 1 is on chip 4 and bit 3 on chip 9, matching MAME's notes; chip 9's link also grounds
@@ -259,5 +260,9 @@ Lunar Rescue one pays out on real bootlegs (Destination Earth, Escape from Mars,
 - [arcade-history.com: Lunar Rescue](https://www.arcade-history.com/game/1418/)
 - [MAME machine data: Space Invaders Part II](https://data.spludlow.co.uk/mame/machine/invadpt2)
 - [List of Taito games (Wikipedia)](https://en.wikipedia.org/wiki/List_of_Taito_games)
+- [robotron-2084.co.uk: Taito Space Invaders Part II 3-layer board stack](https://www.robotron-2084.co.uk/hardware/boardset/taito-space-invaders-part-ii-3-layer-board-stack), board photos and Taito's
+  schematics (CPU AA017757, ROM AA017756A, I/O and sound PV070010) – thanks for making them available
+- Arcade Museum forum (HudsonArcade, Lurch666 and others) and UKVAC, for the repair-side knowledge of Part II's
+  board check
 
 *Mark Hawkings, Bexley, 2026.*

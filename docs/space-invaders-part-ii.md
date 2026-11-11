@@ -32,7 +32,8 @@ On a board where one of them reads high (one ground link missing or wired differ
 both high (both links missing: unconnected TTL inputs usually read high), the game resets. Whether Taito's ground
 links were hidden or ordinary tracks is unknown – a question for owners of real boards.
 
-**Taito's schematic (PV070010 I/O board, "P.T-GAME P.C. BOARD", PVN00004):** the CPU reads ports 0–2 through
+**Taito's schematic (PV070010 I/O board, "P.T-GAME P.C. BOARD", PVN00004; from
+[robotron-2084.co.uk](https://www.robotron-2084.co.uk/hardware/boardset/taito-space-invaders-part-ii-3-layer-board-stack)):** the CPU reads ports 0–2 through
 four 74LS153s (positions 4, 5, 9, 10; selected by A8/A9). Port 0 is input C0 of each. Every unused C0 input has a
 1k pull-up to +5V; pin 10 (2C0) of **chip 4** and **chip 9** also has a ground symbol on the same node, so those two
 read low. That's port 0 bits 1 and 3 – the pair the trap checks. Chip 9's ground link also takes in pin 11 (2C1),
