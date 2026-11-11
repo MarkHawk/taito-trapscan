@@ -1,7 +1,6 @@
 """Minimal Intel 8080 emulator plus a Space Invaders-family board model.
 
 RAM is $2000-$3FFF (video from $2400); writes anywhere else are ignored, as on the real board."""
-import sys
 
 class CPU:
     def __init__(s, mem):

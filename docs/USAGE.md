@@ -4,7 +4,7 @@ Tools for finding hidden credit routines ("free-play backdoors") in 8080 Space I
 arcade ROMs: Taito, Midway and their bootlegs, 1978–81.
 
 They came out of reverse-engineering two 1979 Taito games, where both turned out to contain
-anti-bootleg traps that hand out credits on a secret button combination — see the main README.
+anti-bootleg traps that hand out credits on a secret button combination: see the main README.
 
 Pure Python 3 (3.8+). No dependencies, except Pillow if you want screenshots (`pip install pillow`).
 

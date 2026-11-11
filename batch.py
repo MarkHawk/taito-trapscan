@@ -16,7 +16,7 @@ import traceback
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from trapscan.romload import expand          # noqa: E402
 from trapscan.emu8080 import Board            # noqa: E402
-from trapscan.z80mode import expand_z80, scanner_profile, disassemble_z80   # noqa: E402
+from trapscan.z80mode import expand_z80, scanner_profile   # noqa: E402
 from trapscan.disasm import disassemble      # noqa: E402
 from trapscan.scanner import Scanner         # noqa: E402
 
@@ -151,7 +151,7 @@ def main():
             print(f'    ERROR: {ex}')
 
     results.sort(key=lambda r: (RANK[r['verdict']], r['name']))
-    L = [f'# trapscan batch report', '',
+    L = ['# trapscan batch report', '',
          f'{datetime.datetime.now():%Y-%m-%d %H:%M} · folder `{args.romdir}` · {len(results)} sets', '',
          '| Verdict | Count |', '|---|---|']
     for v in RANK:

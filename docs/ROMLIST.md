@@ -16,7 +16,7 @@ Legend: ★ = top priority.
 
 ---
 
-## 1. Taito genuine (and Taito-licensed) — 8080 board
+## 1. Taito genuine (and Taito-licensed), 8080 board
 
 ### Space Invaders (1978–79), the baseline
 
@@ -75,7 +75,7 @@ Revisions matter: if a trap appears or disappears between `polariso` → `polari
 
 ---
 
-## 2. Bootlegs — 8080 board
+## 2. Bootlegs, 8080 board
 
 These are what the traps were aimed at. If a bootleg altered the checked text or hardware, the trap
 may simply **work** in MAME with no poking.

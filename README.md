@@ -144,8 +144,8 @@ Details: [docs/easter-egg-travelled.md](docs/easter-egg-travelled.md).
 
 ## So what was going on at the squash club?
 
-If the machine was a Lunar Rescue copy with the Taito name changed — *Destination Earth* or *Escape from
-Mars*, or the right version of *Moon Lander*, which was a UK bootleg — holding the combo during the attract demo gave free credits, exactly as described above. I can't
+If the machine was a Lunar Rescue copy with the Taito name changed (*Destination Earth* or *Escape from
+Mars*, or the right version of *Moon Lander*, which was a UK bootleg), holding the combo during the attract demo gave free credits, exactly as described above. I can't
 know which board it was, but the memory fits the code, and those copies were real.
 
 ## Was this Taito policy?
@@ -159,7 +159,7 @@ On the evidence so far, it was a 1979 tactic:
   without. Hiding traps in the code mattered less once copiers had to beat a chip.
 
 Since checked: Balloon Bomber, Lupin III, Polaris, Space Chaser, Indian Battle and Steel Worker (no trap), and
-the Z80 games that followed — Crazy Balloon, Space Cruiser, Space Seeker, Alpine Ski, Wild Western, Jungle King,
+the Z80 games that followed: Crazy Balloon, Space Cruiser, Space Seeker, Alpine Ski, Wild Western, Jungle King,
 Front Line, Elevator Action (no trap). The Elevator Action bootleg had to patch nine places to run without
 Taito's 68705 protection chip: by 1983 the protection lived in hardware.
 

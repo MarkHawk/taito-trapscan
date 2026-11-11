@@ -10,7 +10,7 @@ Board facts used (from the code itself and MAME's taitosj driver):
                      A second Z80 runs sound from its own ROMs.
   Crazy Balloon:     ROM $0000-$3FFF, inputs via IN ports.
 """
-from .romload import read_files, split_sets, natural_key, similarity
+from .romload import read_files, split_sets, similarity
 
 JUMPS = {0xC3, 0xCD, 0xC2, 0xCA, 0xD2, 0xDA, 0xC4, 0xCC, 0xD4, 0xDC, 0xE2, 0xEA, 0xF2, 0xFA}
 SJ_INPUTS = (0xD400, 0xD410)
