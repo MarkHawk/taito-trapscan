@@ -76,6 +76,11 @@ Part II hides the same idea more carefully:
   missed both got a board that won't start; one who missed one, or wired it differently, got a board that gives
   free games. Whether Taito hid those links (under a chip, on the solder side, a jumper wire) or they were
   ordinary tracks, I can't tell from the code; owners of real Part II boards could check.
+
+  Repairers do know a check exists. In a [UKVAC thread](https://www.ukvac.com/forum/threads/taito-3-pcb-invaders-boardset-resetting.75648/)
+  about a resetting Part II board, one notes "There are a couple of grounds changed for an SI 2 board and a
+  protection check in the game." What I couldn't find anywhere is what the check does: that the wrong wiring
+  either resets the game or, with one line wrong, arms a free-credit routine.
 - **There's a second trap that doesn't work.** It's armed if five bytes of the program ROM have been
   changed, but it reads the controls through a helper that leaves a register pointing at ROM. Its
   "2 credits" are written into read-only memory and vanish. Whether that's a bug or a decoy, it never
@@ -221,6 +226,10 @@ Other anti-copying tricks from the same era that are documented:
   ([TCRF](https://tcrf.net/Donkey_Kong_(Arcade))).
 - **Tempest (1981)**: a buggy anti-piracy checksum in the first revision could award 40 free credits; Atari
   fixed it in revision 2 ([TCRF](https://tcrf.net/Tempest_(Arcade))).
+- **Space Invaders Part II's board check** is known to repairers as "a couple of grounds changed for an SI 2
+  board and a protection check in the game"
+  ([UKVAC](https://www.ukvac.com/forum/threads/taito-3-pcb-invaders-boardset-resetting.75648/)), and MAME's driver
+  notes the two lines are tied low on Taito's schematic; the credit trap behind it hasn't been described.
 - **Space Dungeon (Taito America, 1981)** has an untriggered message, "STOLEN FROM THE GOOD BUDDY'S AT TAITO
   BY AN UNAUTHORIZED DO BADDER" ([TCRF](https://new.tcrf.net/Space_Dungeon)).
 - A story from General Computer (Ms. Pac-Man's developers): a scheme that checked the screen for the copyright
