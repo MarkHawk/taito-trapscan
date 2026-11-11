@@ -1,4 +1,4 @@
-# Results across a full MAME 0.277 collection (144 sets)
+# Results across a full MAME 0.277 collection (149 sets)
 
 Scanned with `batch.py` (merged zips expanded; clone ROMs placed by matching the parent's code).
 
@@ -12,8 +12,15 @@ Scanned with `batch.py` (merged zips expanded; clone ROMs placed by matching the
 | `lrescuem`, `lrescuem2` | Model Racing bootlegs | disarmed (copyright intact) | nothing |
 | **`desterth`** Destination Earth | bootleg | **armed** | **3 credits** |
 | **`escmars`** Escape from Mars | bootleg | **armed** | **3 credits** |
-| `mlander` Moon Lander | Leisure Time Electronics (UK) bootleg | armed, but **blocked**: controls read as 0 while no game is running ($0A48 → new code at $0D2C), so the combo can't register – deliberate or a side effect, unclear | nothing |
+| **`mlandera`** Moon Lander, set 2 | Leisure Time Electronics (UK) bootleg | **armed** (copyright changed) | **3 credits** |
+| `mlander` Moon Lander, set 1 | Leisure Time Electronics (UK) bootleg | armed, but **blocked**: controls read as 0 while no game is running ($0A48 → new code at $0D2C), so the combo can't register | nothing |
 | `resclunar` Rescate Lunar | Niemer S.A. (Spain) bootleg | **patched out**: `RZ`→`RET` at $47E6; also adds its own ROM checksum at $5040 that crashes the machine if altered | nothing |
+
+The two Moon Lander sets differ by 25 bytes, all of them the idle-controls check that set 1 adds: `MVI A,1 / STA $20EF`
+at game start ($0662), `CALL $425B` → `XRA A / STA $20EF` when the game ends ($46B5), and the player-1 input read at
+$0A48 redirected to `LDA $20EF / ORA A / RZ / IN 1 / RET` ($0D2C). Set 2 (`mlandera`, ROM 5 labelled "rev d") has
+none of it, so its trap pays out. Which set came first, and whether the check was added to stop the trick, is not
+known.
 
 ## Space Invaders Part II family (trap 1 at $418F, armed by port-0 board check; trap 2 at $0A2D is broken)
 
@@ -53,6 +60,10 @@ including disguised and offset pointers (`trapscan/audit.py`).
 | Space Chaser (all sets) | coin ($13D0, via pointer), start ($1459) | clean |
 | Balloon Bomber, Lupin III, Polaris, Indian Battle, Steel Worker | coin, start | clean |
 | Galactica (Taito do Brasil) | its own coin routine ($4E48), 1P start ($0869), 2P start ($080A) | clean |
+| Cosmic Battle (`cosmicbat`, Recreativos Franco bootleg of Space Invaders) | coin ($0038, via its own coinage code at $0BFE), 50p coin chute ($10AF), start ($07A3) | clean |
+| Space Invaders SV rev 3 (`sisv3`) | coin, start (same writers as `invaders`) | clean |
+| Moon Raker (`mraker`, Nichibutsu) | coin ($00DD), start 1P/2P ($0C11, $0C2D, $0C49) | clean |
+| Ozma Wars (`ozmawars`, `ozmawars3`) | coin ($02E8), 2P start ($03AC), 1P start ($04B3) | clean |
 
 Writers are followed down both sides of every branch and through jumps; the method finds all four Lunar Rescue
 writers (including the trap) without being told where they are.

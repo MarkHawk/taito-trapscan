@@ -22,6 +22,12 @@ KNOWN = {
     'invadpt2': [('0000', 'pv01'), ('0800', 'pv02'), ('1000', 'pv03'), ('1800', 'pv04'), ('4000', 'pv05')],
     'lrescue':  [('0000', 'lrescue.1'), ('0800', 'lrescue.2'), ('1000', 'lrescue.3'), ('1800', 'lrescue.4'),
                  ('4000', 'lrescue.5'), ('4800', 'lrescue.6')],
+    # sets whose ROMs the matcher/self-locator can't place reliably (layouts from MAME's 8080bw.cpp)
+    'cosmicbat': [('0000', '1.5m'), ('0400', '2.5n'), ('0800', '3.5p'), ('0C00', '4.5r'), ('1000', '5.5s'),
+                  ('1400', '6.5t'), ('1800', '7.5u'), ('1C00', '8.5v')],
+    'mraker':   [('0000', 'mr_1.a4'), ('0400', 'mr_2.c4'), ('0800', 'mr_3.e4'), ('0C00', 'mr_4.f4'),
+                 ('1000', 'mr_5.h4'), ('1400', 'mr_6.l4'), ('1800', 'mr_7.a5'), ('1C00', 'mr_8.c5'),
+                 ('4000', 'mr_9.e5'), ('4800', 'mr_10.f5'), ('5000', 'mr_11.h5')],
 }
 MATCH_THRESHOLD = 0.7      # fraction of identical bytes needed to place a clone ROM over the parent
                            # (real bootleg/revision ROMs match at 90-100%; unrelated code ~50%)
@@ -283,6 +289,10 @@ def expand(path, overrides=None, only=None):
         if c in first and len(program_files(sets[c])) >= 3]   # siblings that carry most of their own ROMs
     for clone in clones:
         if only not in (None, clone):
+            continue
+        if clone in KNOWN and all(fn in sets[clone] for _, fn in KNOWN[clone]):
+            mem, layout, notes = build(clone, sets[clone])
+            yield clone, mem, layout, notes, parent
             continue
         try:
             mem, layout, notes = build_clone(pmem, playout, sets[clone],

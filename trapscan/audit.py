@@ -32,7 +32,8 @@ def coin_probe(mem, port0=0, port2=0):
             setp(base)
             for _ in range(40): b.run_frame()
             res.append(bytes(m[0x2000:0x2400]))
-        c = [0x2000 + i for i in range(0x400) if s0[i] == 0 and res[0][i] == 1 and res[1][i] == 2]
+        c = [0x2000 + i for i in range(0x400)       # 0 -> n -> 2n credits (n = 1-3: some bootlegs pay 2 a coin)
+             if s0[i] == 0 and 1 <= res[0][i] <= 3 and res[1][i] == 2 * res[0][i]]
         if c:
             return c, (port, bit, low)
     return [], None

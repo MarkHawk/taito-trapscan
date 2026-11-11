@@ -81,18 +81,21 @@ egg: it now spells "TAITO CORP", and its first step no longer needs Left and Rig
 
 ## It worked on real bootlegs
 
-Scanning a full MAME 0.277 collection (144 sets) and running each Lunar Rescue copy in the emulator:
+Scanning a full MAME 0.277 collection (149 sets) and running each Lunar Rescue copy in the emulator:
 
 | Set | Made by | Trap as shipped |
 |---|---|---|
 | **Destination Earth** (`desterth`) | bootleg | **live: the combo gives 3 credits** |
 | **Escape from Mars** (`escmars`) | bootleg | **live: the combo gives 3 credits** |
-| Moon Lander (`mlander`) | Leisure Time Electronics (UK) | armed but blocked: patched so the controls read nothing while idle |
+| **Moon Lander, set 2** (`mlandera`) | Leisure Time Electronics (UK) | **live: the combo gives 3 credits** |
+| Moon Lander, set 1 (`mlander`) | Leisure Time Electronics (UK) | armed but blocked: patched so the controls read nothing while idle |
 | Rescate Lunar (`resclunar`) | Niemer S.A. (Spain) | disabled: `RZ`→`RET` at `$47E6`, plus its own ROM checksum |
 | Lunar Rescue Model Racing / Artic copies, Galaxy Rescue | various | switched off: Taito copyright left intact |
 
-Two pirate copies paid out free games. Two others don't: Rescate Lunar patches the trap out directly, and
-Moon Lander ignores the controls while the game is idle, which blocks it (whether deliberately isn't clear).
+Three pirate copies pay out free games. Two others don't: Rescate Lunar patches the trap out directly, and
+the other Moon Lander set ignores the controls while the game is idle, which blocks it. The two Moon Lander sets
+differ by exactly that: 25 bytes, every one of them part of the idle check. So one version of the
+UK bootleg gave free games and the other didn't (which came first, and whether the fix was deliberate, isn't known).
 All six Space Invaders Part II sets carry their trap too; Midway's *Space Invaders Deluxe* even updated one check to
 match its own changes.
 
@@ -105,7 +108,7 @@ read-only memory, so nothing pays out. Without the bug, Moon Base would have han
 ## So what was going on at the squash club?
 
 If the machine was a Lunar Rescue copy with the Taito name changed — *Destination Earth* or *Escape from
-Mars*, say — holding the combo during the attract demo gave free credits, exactly as described above. I can't
+Mars*, or the right version of *Moon Lander*, which was a UK bootleg — holding the combo during the attract demo gave free credits, exactly as described above. I can't
 know which board it was, but the memory fits the code, and those copies were real.
 
 ## Was this Taito policy?
