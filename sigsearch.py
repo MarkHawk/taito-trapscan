@@ -32,6 +32,7 @@ import zipfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from trapscan.kickme import best_text_hits, NORMAL   # noqa: E402
+from trapscan import skiplist   # noqa: E402
 
 # (name, regex over bytes, what it is). Exact = byte-for-byte from the ROMs; loose = same instruction
 # shape with any addresses/values, to catch relocated or edited copies.
@@ -99,15 +100,21 @@ def main():
     ap.add_argument('-o', '--out', default='sigsearch.csv')
     ap.add_argument('--max-zip-mb', type=float, default=4.0,
                     help='skip zips larger than this (8-bit-era sets are tiny; default 4 MB)')
+    skiplist.add_args(ap)
     ap.add_argument('--quiet', action='store_true', help='no live HIT lines, just progress and the summary')
     ap.add_argument('--no-text', action='store_true', help='skip the kick-me / free-game text search')
     args = ap.parse_args()
     TEXT[0] = not args.no_text
+    skip = skiplist.parse(args)
+    n_skip = 0
 
     rows, zips, skipped, errors = [], 0, 0, 0
     for root, _, names in os.walk(args.folder):
         for fn in sorted(names):
             path = os.path.join(root, fn)
+            if skip and skiplist.skipped(fn, skip):
+                n_skip += 1
+                continue
             try:
                 if fn.lower().endswith('.zip'):
                     if os.path.getsize(path) > args.max_zip_mb * 1024 * 1024:
@@ -137,7 +144,8 @@ def main():
         w.writerow(['zip', 'file', 'offset', 'signature', 'bytes'])
         w.writerows(rows)
 
-    print(f'\nScanned {zips} zips ({skipped} larger than {args.max_zip_mb} MB skipped, {errors} unreadable).')
+    print(f'\nScanned {zips} zips ({skipped} larger than {args.max_zip_mb} MB skipped, {n_skip} skipped by name, '
+          f'{errors} unreadable).')
     for name, _, desc in SIGS + [(n, None, d) for n, d in TEXT_SIGS]:
         sets = sorted({(r[0] + ('/' + r[1].split('/')[0] if '/' in r[1] else '')) for r in rows if r[3] == name})
         print(f'\n{name} - {desc}\n  {len(sets)} set(s): ' + (', '.join(s.replace(".zip", "") for s in sets) if sets else 'none'))

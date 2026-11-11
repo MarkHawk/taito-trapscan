@@ -20,6 +20,7 @@ import zipfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from trapscan.textenc import find_encodings, strings, flags   # noqa: E402
+from trapscan import skiplist   # noqa: E402
 
 MAX_FILE = 1024 * 1024
 
@@ -46,11 +47,14 @@ def main():
     ap.add_argument('folder')
     ap.add_argument('-o', '--out', default='textscan')
     ap.add_argument('--max-zip-mb', type=float, default=4.0)
+    skiplist.add_args(ap)
     ap.add_argument('--all', action='store_true', help='list every set in report.md, not only flagged ones')
     args = ap.parse_args()
     os.makedirs(os.path.join(args.out, 'text'), exist_ok=True)
 
-    zips = sorted(os.path.join(r, f) for r, _, fs in os.walk(args.folder) for f in fs if f.lower().endswith('.zip'))
+    skip = skiplist.parse(args)
+    zips = sorted(os.path.join(r, f) for r, _, fs in os.walk(args.folder) for f in fs
+                  if f.lower().endswith('.zip') and not (skip and skiplist.skipped(f, skip)))
     report_top, report, n_sets, n_enc, n_flag = [], [], 0, 0, 0
     for zi, path in enumerate(zips, 1):
         if zi % 500 == 0:

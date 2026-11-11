@@ -23,6 +23,7 @@ import zipfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from trapscan.textenc import find_encodings, table   # noqa: E402
+from trapscan import skiplist   # noqa: E402
 
 MAX_FILE = 1024 * 1024
 
@@ -121,10 +122,13 @@ def main():
     ap.add_argument('-o', '--out', default='clonediff.md')
     ap.add_argument('--max-zip-mb', type=float, default=4.0)
     ap.add_argument('--context', type=int, default=6, help='bytes of context when decoding changed text')
+    skiplist.add_args(ap)
     args = ap.parse_args()
+    skip = skiplist.parse(args)
 
     zips = sorted(os.path.join(r, f) for r, _, fs in os.walk(args.folder) for f in fs if f.lower().endswith('.zip')
-                  and os.path.getsize(os.path.join(r, f)) <= args.max_zip_mb * 1024 * 1024)
+                  and os.path.getsize(os.path.join(r, f)) <= args.max_zip_mb * 1024 * 1024
+                  and not (skip and skiplist.skipped(f, skip)))
 
     # CRC index for non-merged sets: (crc, size) -> zips holding that ROM at the top level
     crcs, index = {}, collections.defaultdict(set)

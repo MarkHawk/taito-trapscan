@@ -57,6 +57,20 @@ tilt included, and reports any that raises the credit count. A second coin chute
 `--patch ADDR=VAL` simulates a bootleg first (e.g. change one letter of the copyright text). A trap that only
 arms after a number of paid plays won't fire in this test; its credit write still shows in the writer audit.
 
+### Big collections: skip what's out of scope
+
+A full modern MAME set is mostly hardware these tools aren't aimed at. All three tools (`sigsearch.py`,
+`textscan.py`, `clonediff.py`) take:
+
+- `--max-zip-mb 1`: 1978–84 sets are small, so this skips most later games without reading them (default 4);
+- `--skip-nonarcade`: skip fruit machines (Barcrest MPU, JPM, Maygay, BFM Scorpion, Astra), video poker,
+  PlayChoice-10, Mega-Tech and Game & Watch sets, by name prefix;
+- `--skip a,b,c`: your own extra prefixes.
+
+On a 13,000-zip MAME 0.277 set, `--max-zip-mb 1 --skip-nonarcade` cuts a run from many hours to a fraction
+of that. Big merged golden-age sets (Galaxian, Pac-Man with all their clones) can be over 1 MB; run those on
+their own if so.
+
 ## Hidden text in any game: credits, anti-piracy and developer messages
 
 ```bash
