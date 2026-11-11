@@ -8,8 +8,8 @@ for the exact byte sequences of the 1979 Taito traps and their arming checks, pl
 (the same logic with different addresses). Byte searching doesn't care about ROM layout or CPU mode,
 so it finds the code even in sets the scanner can't lay out or run.
 
-Live: each hit is printed as it's found (HIT lines), except the known combo values below and FREE PLAY
-text, which only go to the CSV and summary. --quiet turns the live lines off.
+Live: each hit is printed as it's found (HIT lines), except the known combo values below, which only go
+to the CSV and summary. --quiet turns the live lines off.
 
 Output: one CSV row per hit (zip, file inside it, offset, signature), and a summary per signature.
 
@@ -18,10 +18,6 @@ is listed under the parent only. Known COMBO_76_ANY values: D6 72 / FE 34 (Space
 egg), D6 52 (Part II "TAITO CORP" egg), FE 54 (Lunar Rescue trap), FE 36 / FE 56 (Part II traps 1 / 2).
 Anything else is new and worth reading.
 
-KICK_TEXT: the "kick me for a free game" test - KICK ME / FREE GAME / FREE CREDIT wording in any
-letter encoding (ASCII, A=$00, A=$0A, every-second-code ...), any CPU. FREE PLAY is reported separately as
-FREE_PLAY_TEXT because it's ordinary DIP-switch text. Short words like KICK can turn up by chance in big
-ROMs, so read the bytes around a hit. Turn it off with --no-text.
 """
 import argparse
 import csv
@@ -31,8 +27,6 @@ import sys
 import zipfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from trapscan.kickme import best_text_hits, NORMAL   # noqa: E402
-from trapscan.textenc import find_encodings   # noqa: E402
 from trapscan import skiplist   # noqa: E402
 
 # (name, regex over bytes, what it is). Exact = byte-for-byte from the ROMs; loose = same instruction
@@ -64,24 +58,12 @@ SIGS = [
 SIGS = [(n, re.compile(p, re.S), d) for n, p, d in SIGS]
 
 
-TEXT_SIGS = [('KICK_TEXT', 'kick-me / free-game wording, in the letter codes the game uses for its own text'),
-             ('FREE_PLAY_TEXT', 'FREE PLAY wording (usually ordinary DIP-switch text)'),
-             ('KICK_TEXT_WEAK', 'same wording but in an encoding the game does not use for its text: almost always a '
-                                'chance match in code or graphics (CSV only, not shown live)'),
-             ('FREE_PLAY_TEXT_WEAK', 'FREE PLAY in an encoding the game does not use (chance match)')]
-TEXT = [True]
-
-
 def scan_bytes(data):
-    if TEXT[0]:
-        for off, ph, base, step in best_text_hits(data):
-            name = 'FREE_PLAY_TEXT' if ph.replace(' ', '?') in NORMAL else 'KICK_TEXT'
-            yield name, off, f'"{ph}" (A=${base:02X}, step {step}) ' + data[off:off + len(ph)].hex(' ').upper(), (base, step)
     for name, rx, _ in SIGS:
         for m in rx.finditer(data):
             if name == 'COMBO_76_ANY' and bin(m.group(0)[-1]).count('1') < 2:
                 continue                      # one button (e.g. CPI $40 = Right while playing), not a combo
-            yield name, m.start(), m.group(0).hex(' ').upper(), None
+            yield name, m.start(), m.group(0).hex(' ').upper()
 
 
 KNOWN_COMBOS = {'E6 76 D6 72', 'E6 76 FE 34', 'E6 76 D6 52', 'E6 76 FE 54', 'E6 76 FE 36', 'E6 76 FE 56'}
@@ -92,8 +74,6 @@ def live(row):
     to the CSV and summary so they don't drown the new ones."""
     zipname, fn, off, name, hexs = row
     if name == 'COMBO_76_ANY' and hexs in KNOWN_COMBOS:
-        return
-    if name.startswith('FREE_PLAY_TEXT') or name.endswith('_WEAK'):
         return
     print(f'  HIT {name:16} {zipname} {fn} {off}  {hexs}', flush=True)
 
@@ -106,9 +86,7 @@ def main():
                     help='skip zips larger than this (8-bit-era sets are tiny; default 4 MB)')
     skiplist.add_args(ap)
     ap.add_argument('--quiet', action='store_true', help='no live HIT lines, just progress and the summary')
-    ap.add_argument('--no-text', action='store_true', help='skip the kick-me / free-game text search')
     args = ap.parse_args()
-    TEXT[0] = not args.no_text
     skip = skiplist.parse(args)
     n_skip = 0
 
@@ -129,21 +107,13 @@ def main():
                     with zipfile.ZipFile(path) as z:
                         datas = {info.filename: z.read(info) for info in z.infolist()
                                  if not info.is_dir() and info.file_size <= 1024 * 1024}
-                    encs = None                      # the set's own text encodings, worked out on first text hit
                     for fname, data in datas.items():
-                        for name, off, hexs, enc in scan_bytes(data):
-                            if enc is not None:
-                                if encs is None:
-                                    encs = {(e[0], e[1]) for e in find_encodings(datas.values(), min_anchors=2, min_len=5)}
-                                if enc not in encs:  # not how this game writes its text: a chance match
-                                    name += '_WEAK'
+                        for name, off, hexs in scan_bytes(data):
                             rows.append((os.path.relpath(path, args.folder), fname, f'0x{off:04X}', name, hexs))
                             if not args.quiet: live(rows[-1])
                 elif os.path.getsize(path) <= 64 * 1024 and not fn.lower().endswith(('.chd', '.7z', '.txt', '.md')):
                     data = open(path, 'rb').read()
-                    for name, off, hexs, enc in scan_bytes(data):
-                        if enc is not None and enc not in {(e[0], e[1]) for e in find_encodings([data], min_anchors=2, min_len=5)}:
-                            name += '_WEAK'
+                    for name, off, hexs in scan_bytes(data):
                         rows.append((os.path.relpath(path, args.folder), '', f'0x{off:04X}', name, hexs))
                         if not args.quiet: live(rows[-1])
             except Exception as ex:  # unreadable or odd archive: note and carry on
@@ -157,7 +127,7 @@ def main():
 
     print(f'\nScanned {zips} zips ({skipped} larger than {args.max_zip_mb} MB skipped, {n_skip} skipped by name, '
           f'{errors} unreadable).')
-    for name, _, desc in SIGS + [(n, None, d) for n, d in TEXT_SIGS]:
+    for name, _, desc in SIGS:
         sets = sorted({(r[0] + ('/' + r[1].split('/')[0] if '/' in r[1] else '')) for r in rows if r[3] == name})
         print(f'\n{name} - {desc}\n  {len(sets)} set(s): ' + (', '.join(s.replace(".zip", "") for s in sets) if sets else 'none'))
     print(f'\nAll hits written to {args.out}')

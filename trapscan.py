@@ -6,7 +6,6 @@
   python3 trapscan.py run lrescue.zip --set desterth   # a clone inside a merged zip
   python3 trapscan.py run lrescue.zip --frames 1800 \\
           --poke 20ed=1@170 --hold start1+fire+right@1600-1700 --watch 20eb --break 47e9
-  python3 trapscan.py kick lrescue.zip                 # 'kick me for a free game' test
 
 See README.md for details.
 """
@@ -131,46 +130,6 @@ def cmd_run(args):
         print(f'break ${a:04X}: ' + (f'hit {n} times, first at frame {first[a]}' if n else 'never reached'))
 
 
-def cmd_kick(args):
-    """'Kick me' test: hidden free-game text in any encoding, then every input pulsed in the emulator."""
-    from batch import is_z80_set
-    from trapscan.romload import read_files
-    from trapscan.kickme import best_text_hits, pulse_test, NORMAL
-    from trapscan.audit import coin_probe, writers
-    patches = [(int(a, 16), int(v, 16)) for a, v in (x.split('=') for x in (args.patch or []))]
-    paths = [p for pat in args.sets for p in (glob.glob(pat) or [pat])]
-    for path in paths:
-        print('=' * 70)
-        print(path)
-        files = read_files(path)
-        found = False
-        for fn in sorted(files):
-            if args.set and '/' in fn and fn.split('/')[0] != args.set:
-                continue
-            for off, ph, base, step in best_text_hits(files[fn]):
-                found = True
-                tag = '(ordinary attract/DIP text)' if ph.replace(' ', '?') in NORMAL else '<-- read this'
-                print(f'  text "{ph}" in {fn} at +${off:04X} (letters from ${base:02X}, step {step}) {tag}')
-        if not found:
-            print('  text: no KICK / FREE GAME / FREE CREDIT wording in any encoding')
-        if is_z80_set(path):
-            print('  pulse test: skipped (Z80 set; emulator is 8080 only)')
-            continue
-        for name, mem, layout, notes, parent in expand(path, only=args.set):
-            if mem is None:
-                print(f'  {name}: load error'); continue
-            counter, coin = coin_probe(mem, int(args.port0, 16), int(args.port2, 16))
-            if not counter:
-                print(f'  {name}: credit counter not found by coin test - pulse test skipped'); continue
-            x = counter[0]
-            hits = pulse_test(mem, x, coin, int(args.port0, 16), int(args.port2, 16), patches=patches)
-            ws = writers(mem, regions_from(layout), x)
-            print(f'  {name}: credits ${x:04X}, coin = port {coin[0]} bit {coin[1]}; '
-                  + (', '.join(f'port {p} bit {b} raised credits {c0:02X}->{c1:02X}' for p, b, c0, c1 in hits)
-                     if hits else 'no other input raises credits')
-                  + f'; {len(ws)} code locations can write credits' + (' (see `scan` / docs/USAGE.md)' if ws else ''))
-
-
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest='cmd', required=True)
@@ -199,13 +158,6 @@ def main():
     r.add_argument('--out', default='out')
     r.set_defaults(fn=cmd_run)
 
-    k = sub.add_parser('kick', help="'kick me for a free game' test: hidden text + every input pulsed")
-    k.add_argument('sets', nargs='+', help='MAME zip(s) or folder(s); wildcards allowed')
-    k.add_argument('--set', help='only this set from a merged zip')
-    k.add_argument('--patch', action='append', metavar='ADDR=VAL',
-                   help='patch ROM bytes first, e.g. a letter of the copyright text, to simulate a bootleg')
-    k.add_argument('--port0', default='00'); k.add_argument('--port2', default='00')
-    k.set_defaults(fn=cmd_kick)
     args = ap.parse_args()
     args.fn(args)
 

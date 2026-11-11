@@ -1,5 +1,5 @@
 """Set-name prefixes for hardware outside the scope of these searches (fruit machines, video poker,
-console-based arcade systems, handhelds). Used by --skip-nonarcade in sigsearch/textscan/clonediff.
+console-based arcade systems, handhelds). Used by --skip-nonarcade in sigsearch.
 
 Prefix matching is by name only, so it's a time saver, not an exact filter: check the counts it prints.
 """
