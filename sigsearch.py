@@ -8,6 +8,9 @@ for the exact byte sequences of the 1979 Taito traps and their arming checks, pl
 (the same logic with different addresses). Byte searching doesn't care about ROM layout or CPU mode,
 so it finds the code even in sets the scanner can't lay out or run.
 
+Live: each hit is printed as it's found (HIT lines), except the known combo values below and FREE PLAY
+text, which only go to the CSV and summary. --quiet turns the live lines off.
+
 Output: one CSV row per hit (zip, file inside it, offset, signature), and a summary per signature.
 
 Merged sets keep only a clone's changed files, so a clone that inherits the trap from its parent's ROMs
@@ -76,12 +79,27 @@ def scan_bytes(data):
             yield name, m.start(), m.group(0).hex(' ').upper()
 
 
+KNOWN_COMBOS = {'E6 76 D6 72', 'E6 76 FE 34', 'E6 76 D6 52', 'E6 76 FE 54', 'E6 76 FE 36', 'E6 76 FE 56'}
+
+
+def live(row):
+    """Print a hit as soon as it's found (stdout, flushed). Known easter-egg/trap combo values are left
+    to the CSV and summary so they don't drown the new ones."""
+    zipname, fn, off, name, hexs = row
+    if name == 'COMBO_76_ANY' and hexs in KNOWN_COMBOS:
+        return
+    if name == 'FREE_PLAY_TEXT':
+        return
+    print(f'  HIT {name:16} {zipname} {fn} {off}  {hexs}', flush=True)
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument('folder')
     ap.add_argument('-o', '--out', default='sigsearch.csv')
     ap.add_argument('--max-zip-mb', type=float, default=4.0,
                     help='skip zips larger than this (8-bit-era sets are tiny; default 4 MB)')
+    ap.add_argument('--quiet', action='store_true', help='no live HIT lines, just progress and the summary')
     ap.add_argument('--no-text', action='store_true', help='skip the kick-me / free-game text search')
     args = ap.parse_args()
     TEXT[0] = not args.no_text
@@ -104,10 +122,12 @@ def main():
                             data = z.read(info)
                             for name, off, hexs in scan_bytes(data):
                                 rows.append((os.path.relpath(path, args.folder), info.filename, f'0x{off:04X}', name, hexs))
+                                if not args.quiet: live(rows[-1])
                 elif os.path.getsize(path) <= 64 * 1024 and not fn.lower().endswith(('.chd', '.7z', '.txt', '.md')):
                     data = open(path, 'rb').read()
                     for name, off, hexs in scan_bytes(data):
                         rows.append((os.path.relpath(path, args.folder), '', f'0x{off:04X}', name, hexs))
+                        if not args.quiet: live(rows[-1])
             except Exception as ex:  # unreadable or odd archive: note and carry on
                 errors += 1
                 print(f'  skip {path}: {ex}', file=sys.stderr)
