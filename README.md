@@ -66,9 +66,16 @@ Part II hides the same idea more carefully:
 - **Credits have a shadow copy** at `$20CC`. The interrupt handler compares the two every frame and
   restarts the game if they differ, so poking the credit counter in a debugger just resets the
   machine. The hidden routine writes both copies.
-- **The trigger is the hardware, not the text.** At power-up the game reads two input lines that
-  MAME doesn't connect to anything (presumably unused on Taito's own board). Both low: trap disarmed. One high: trap stays
-  armed. Both high: the game resets itself.
+- **The trigger is the hardware, not the text.** The game keeps reading two input lines (port 0, bits 1 and 3)
+  that do nothing else. According to the notes in MAME's driver, taken from Taito's schematic, both are **tied to
+  ground** on Taito's board, while most of their unused neighbours are pulled high. Both low (Taito's wiring):
+  trap disarmed. Both high (what an unconnected TTL input usually reads): the game resets itself. Exactly one
+  high: the trap stays armed.
+
+  So the check isn't looking for any old difference: it's looking for two specific ground links. A copier who
+  missed both got a board that won't start; one who missed one, or wired it differently, got a board that gives
+  free games. Whether Taito hid those links (under a chip, on the solder side, a jumper wire) or they were
+  ordinary tracks, I can't tell from the code; owners of real Part II boards could check.
 - **There's a second trap that doesn't work.** It's armed if five bytes of the program ROM have been
   changed, but it reads the controls through a helper that leaves a register pointing at ROM. Its
   "2 credits" are written into read-only memory and vanish. Whether that's a bug or a decoy, it never
@@ -195,8 +202,10 @@ Full instructions: [docs/USAGE.md](docs/USAGE.md). Sets worth collecting: [docs/
 
 - Confirmed by disassembly and emulation, **not yet on real hardware**.
 - Z80 games are scanned statically (no Z80 emulator yet).
-- Which real boards had the Part II input lines high is unknown. MAME leaves them low, so the trap is
-  off there unless you poke the flag.
+- Which real boards had one of the Part II input lines high is unknown. MAME leaves them low (Taito's wiring),
+  so the trap is off there unless you poke the flag. If you have a genuine or bootleg Part II board: are port 0
+  bits 1 and 3 (both grounded on Taito's schematic) really tied low on yours, and how is that link made? Does the
+  combo work? An issue on this repo with the answer would settle it.
 - "Right" means bit 6 of input port 1, the standard Space Invaders wiring.
 - "Not documented before" means I couldn't find it online, in TCRF, Computer Archeology or the arcade
   history databases. If you know otherwise, open an issue; I'd love to hear it.

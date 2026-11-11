@@ -25,9 +25,12 @@ in 0 / ani $0A / cpi $0A / jz $0000   ; port 0 bits 1 AND 3 high -> reset the ma
 ana a / rnz                           ; exactly one high -> stay armed
 mvi $20E3,0                           ; both low -> disarm
 ```
-MAME doesn't define those port-0 bits (they read 0), so the trap disarms at frame 18 (and the check keeps
-running through attract mode, clearing it again).
-On hardware where one of them reads high, it stays live.
+MAME's driver notes (from Taito's schematic) say port 0 bits 1 and 3 are **tied low** on Taito's board, while
+bits 2, 4, 5 and 7 are pulled high through 1k resistors. MAME reads them as 0, so the trap disarms at frame 18
+(and the check keeps running through attract mode, clearing it again).
+On a board where one of them reads high (one ground link missing or wired differently), it stays live; with
+both high (both links missing: unconnected TTL inputs usually read high), the game resets. Whether Taito's ground
+links were hidden or ordinary tracks is unknown – a question for owners of real boards.
 
 **Emulator result:** with port 0 = $02 and the combo held during attract → credits 2, game starts.
 Genuine port values → nothing.
