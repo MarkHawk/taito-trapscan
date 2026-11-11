@@ -13,8 +13,21 @@ before being called new. "Not found" means not found in those sources, not proof
 | `levers` | Levers (Rock-Ola, 1983) | **"THIS IS AN ILLEGAL COPY OF COPYRIGHTED SOFTWARE"** | `g96061.e8` +0722 |
 | `warofbug` (and clones) | War of the Bugs (Armenia, 1981) | "...TOTALLY ORIGINAL ... UNAUTHORISED DUPLICATION" | `warofbug.z` +001C |
 
-Whether these are ever shown, and what triggers them (a copy check, as in Lunar Rescue, or nothing at all, as
-in Akka Arrh), is still to be traced in the code.
+**Traced: neither warning is ever shown by the shipped code.**
+
+- **Time Pilot '84.** The two lines are messages 82 and 83 in the main CPU's message table at $BC6E, filed among
+  the power-on self-test messages (RAM OK, ROM BAD, MAIN/SUB...). The only code that reads the table is the pair
+  of print routines at $83C8 and $83E5, and every call to them passes a fixed message number: 34–40 and 72–77.
+  Nothing asks for 82 or 83, nothing else points at those table entries or the text, and the sub CPU doesn't
+  either. The self-test's real ROM check ($B700) sums each ROM, overwrites "ROMx OK" with "BAD" and halts; it
+  doesn't use the warning.
+- **Levers.** The two lines are message 0 in a table at $3714, printed by the routine behind the jump at $3000.
+  That routine is called from four places, with messages 1–4 (GAME OVER, HIGH SCORE...). Message 0 is never
+  requested, and there's no other route to it.
+
+So both are dormant: a warning written into the ROM for anyone who dumps it, or one whose check was never
+finished. That's the same pattern as Akka Arrh's note, and different from the Lunar Rescue and Part II traps,
+which run.
 
 ## ★★ Copyright and legal notices kept in ROM
 

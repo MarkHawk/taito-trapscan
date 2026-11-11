@@ -121,7 +121,8 @@ Details: [docs/easter-egg-travelled.md](docs/easter-egg-travelled.md).
 `textscan.py` turned up anti-piracy messages in other companies' games that I couldn't find documented,
 including **Time Pilot '84** ("THIS IS AN ILLEGAL DUPLICATE OF KONAMI'S ORIGINAL PCBOARD") and Rock-Ola's
 **Levers** ("THIS IS AN ILLEGAL COPY OF COPYRIGHTED SOFTWARE"), plus programmer credits and personal notes.
-What, if anything, makes them appear is still to be traced. List and sources: [docs/hidden-text-finds.md](docs/hidden-text-finds.md).
+Tracing the code shows neither warning is ever displayed: both sit in their games' message tables, but no code
+asks for them. List and sources: [docs/hidden-text-finds.md](docs/hidden-text-finds.md).
 
 ## So what was going on at the squash club?
 
