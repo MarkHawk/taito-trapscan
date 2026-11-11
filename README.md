@@ -116,6 +116,13 @@ message changed to **"HOEI COP"**. It still works: hold P2 Start + Fire + Left d
 
 Details: [docs/easter-egg-travelled.md](docs/easter-egg-travelled.md).
 
+## Other hidden text
+
+`textscan.py` turned up anti-piracy messages in other companies' games that I couldn't find documented,
+including **Time Pilot '84** ("THIS IS AN ILLEGAL DUPLICATE OF KONAMI'S ORIGINAL PCBOARD") and Rock-Ola's
+**Levers** ("THIS IS AN ILLEGAL COPY OF COPYRIGHTED SOFTWARE"), plus programmer credits and personal notes.
+What, if anything, makes them appear is still to be traced. List and sources: [docs/hidden-text-finds.md](docs/hidden-text-finds.md).
+
 ## So what was going on at the squash club?
 
 If the machine was a Lunar Rescue copy with the Taito name changed — *Destination Earth* or *Escape from
@@ -192,6 +199,26 @@ Full instructions: [docs/USAGE.md](docs/USAGE.md). Sets worth collecting: [docs/
 - "Right" means bit 6 of input port 1, the standard Space Invaders wiring.
 - "Not documented before" means I couldn't find it online, in TCRF, Computer Archeology or the arcade
   history databases. If you know otherwise, open an issue; I'd love to hear it.
+
+## Prior art
+
+Other anti-copying tricks from the same era that are documented:
+
+- **Atari Centipede (1980)** hid a data pattern that spells "COPYRIGHT 1980 ATARI" in Morse code once decoded.
+  It does nothing at run time; Atari used it as evidence in court that the bootleg *Magic Worm* was copied
+  from its code ([Arcade Blogger](https://arcadeblogger.com/2019/06/29/atari-centipedes-hidden-code-trap/)).
+- **Donkey Kong (1981)** checks part of "NINTENDO" in its copyright line and freezes if it has been changed
+  ([TCRF](https://tcrf.net/Donkey_Kong_(Arcade))).
+- **Tempest (1981)**: a buggy anti-piracy checksum in the first revision could award 40 free credits; Atari
+  fixed it in revision 2 ([TCRF](https://tcrf.net/Tempest_(Arcade))).
+- **Space Dungeon (Taito America, 1981)** has an untriggered message, "STOLEN FROM THE GOOD BUDDY'S AT TAITO
+  BY AN UNAUTHORIZED DO BADDER" ([TCRF](https://new.tcrf.net/Space_Dungeon)).
+- A story from General Computer (Ms. Pac-Man's developers): a scheme that checked the screen for the copyright
+  notice and, if missing, showed "KICK ME FOR A FREE GAME" and paid a credit for each kick
+  ([Ned Batchelder](https://nedbatchelder.com/blog/200404/arcade_copy_protection), told second-hand).
+
+What's different here: the Lunar Rescue and Part II traps run, they're tied to a copy check, and on real
+bootlegs (Destination Earth, Escape from Mars, one version of Moon Lander) they pay out.
 
 ## References
 
