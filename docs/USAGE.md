@@ -44,70 +44,17 @@ Byte-searches every zip (clone folders included) for the exact trap routines, th
 relocated/edited version of each, and any `ANI $76` combo check. It doesn't need to lay out or run anything,
 so it covers games on any board. Zips over 4 MB are skipped (`--max-zip-mb` to change).
 
-It also runs the **"kick me" test**: it looks for KICK / KICK ME / FREE GAME / FREE CREDIT wording in any letter
-encoding (ASCII, A=$00, A=$0A and so on, or every second code as in some vector games), after the anti-piracy
-scheme Ned Batchelder heard about at General Computer: the game checks the screen for its copyright notice and,
-if it's gone, shows "KICK ME FOR A FREE GAME" and pays a credit each time the cabinet's slam switch trips.
-Hits are listed as `KICK_TEXT`; FREE PLAY is listed separately as `FREE_PLAY_TEXT`, since it's normal DIP-switch
-text. Read the bytes around any hit: a FREE GAME message is often just an extra-game award. `--no-text` skips it.
-
-To test the other half of that trick on an 8080 set (does any input other than the coin give credits?), run
-`python3 trapscan.py kick set.zip`. It boots the game in the emulator, pulses every input bit in turn, slam and
-tilt included, and reports any that raises the credit count. A second coin chute shows up here too.
-`--patch ADDR=VAL` simulates a bootleg first (e.g. change one letter of the copyright text). A trap that only
-arms after a number of paid plays won't fire in this test; its credit write still shows in the writer audit.
-
 ### Big collections: skip what's out of scope
 
-A full modern MAME set is mostly hardware these tools aren't aimed at. All three tools (`sigsearch.py`,
-`textscan.py`, `clonediff.py`) take:
+A full modern MAME set is mostly hardware this search isn't aimed at. `sigsearch.py` takes:
 
 - `--max-zip-mb 1`: 1978–84 sets are small, so this skips most later games without reading them (default 4);
 - `--skip-nonarcade`: skip fruit machines (Barcrest MPU, JPM, Maygay, BFM Scorpion, Astra), video poker,
   PlayChoice-10, Mega-Tech and Game & Watch sets, by name prefix;
 - `--skip a,b,c`: your own extra prefixes.
 
-On a 13,000-zip MAME 0.277 set, `--max-zip-mb 1 --skip-nonarcade` cuts a run from many hours to a fraction
-of that. Big merged golden-age sets (Galaxian, Pac-Man with all their clones) can be over 1 MB; run those on
+On a 13,000-zip MAME 0.277 set, `--max-zip-mb 1 --skip-nonarcade` cuts a run to a fraction of the time. Big merged golden-age sets (Galaxian, Pac-Man with all their clones) can be over 1 MB; run those on
 their own if so.
-
-## Hidden text in any game: credits, anti-piracy and developer messages
-
-```bash
-python3 textscan.py ~/roms/mame277 -o textscan
-```
-
-Works on any manufacturer and CPU. For each set it finds the game's own letter codes from words every game
-shows (SCORE, CREDIT, PLAYER, INSERT COIN...), decodes all the text in its ROMs, and:
-
-- prints flagged lines live as it goes: **credits** (PROGRAM, DESIGN, BY...), **anti-piracy** (COPY, PIRATE,
-  ILLEGAL, STOLEN...), **dev** (TEST, SECRET, HELLO, LOVE, KICK...);
-- writes `textscan/report.md` (flagged text by set, the interesting ones first; copyright years after);
-- writes `textscan/text/<set>.txt`, every readable string in the set with file and offset, to skim by eye.
-
-Only the strong lines (PIRATE, STOLEN, PROGRAMMED BY, name FOR company, THANKS, HELLO, LOVE, SECRET...) are
-printed live and listed first in the report, marked ★; test menus, LICENSED TO, VERSION and the like follow,
-then copyright years. `--verbose` prints every flagged line live.
-
-On the 36-zip test collection it turned up "BY JOEL KREGER FOR MIDWAY" in Space Invaders II, "B I LOVE YOU" in
-Jungle King and "DARLING I LOVE YOU" in a Lupin III set. A string being in the ROM doesn't mean it's shown on
-screen; check anything new against [The Cutting Room Floor](https://tcrf.net) before calling it undiscovered.
-
-## What each clone and bootleg changed
-
-```bash
-python3 clonediff.py ~/roms/mame277 -o clonediff.md
-```
-
-For every clone, lists the ROMs it changed from its parent: each changed run of bytes (offset, old → new) and,
-where the bytes are text, the old and new text decoded ("TAITO CORPORATION" → "TAITO DO BRASIL",
-"GALAXY WARS" → "STAR WARS"). Identical ROMs are counted, not listed; ROMs under 50% identical are marked
-new/rewritten. A handful of changed bytes in an otherwise identical ROM is the interesting case: that's how
-the Moon Lander idle-controls patch and the bootleggers' protection fixes show up.
-
-Merged sets (clone folders inside the parent's zip, MAME's default) are compared with the true parent.
-For one-zip-per-set collections it compares each set with its closest relative (most identical ROMs), which
-can be a sibling clone rather than the parent.
 
 ## Merged ROM sets and clones
 
@@ -197,7 +144,8 @@ python3 trapscan.py run invadpt2.zip --frames 400 --port0 02 \
 
 In MAME instead: open the debugger. For Lunar Rescue, after **both** title screens (~10 s from
 power-on) do `b@20ed=1`, then hold P1 Start + Fire + Right once the demo is running. For Part II,
-do `b@20e3=1` in attract and hold P1 Start + P2 Start + Fire + Left.
+the board check clears the flag again and again in attract mode, so set it as the trap reads it:
+`bpset 418c,1,{b@20e3=1;g}`, reset, and hold P1 Start + P2 Start + Fire + Left from power-on.
 
 ## Files
 
@@ -207,8 +155,14 @@ trapscan/disasm.py     8080 disassembler
 trapscan/scanner.py    signature scanner
 trapscan/emu8080.py    8080 CPU + Invaders-family board model
 trapscan/romload.py    zip/folder loading, known layouts, heuristic layout
+trapscan/audit.py      credit counter from a coin test; every instruction that can write it
+trapscan/boards.py     other board models (Space Stranger)
+trapscan/z80mode.py    Z80 detection, layout and static scan (Taito SJ, Crazy Balloon)
+trapscan/skiplist.py   name prefixes for --skip-nonarcade
 batch.py               folder -> one Markdown report
-docs/                  write-ups and this guide: Lunar Rescue, Space Invaders Part II, Lunar Lander (clean)
+sigsearch.py           byte-search a whole collection for the trap code
+scripts/eggdemo.py     trigger TAITO COP / HOEI COP and save a screenshot
+docs/                  write-ups and this guide
 ```
 
 ROMs are not included. Use your own dumps.

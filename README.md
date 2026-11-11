@@ -10,7 +10,8 @@ routines that hand out free credits when you hold a secret button combination in
 **they're designed to work only on copied boards**. On a genuine Taito machine the trap switches
 itself off a few seconds after power-up. On a bootleg, it stays live.
 
-As far as I can find, none of this has been documented before.
+As far as I can find, the free-credit routines haven't been documented before. (Repairers had already
+spotted the reset half of Part II's board check; see below.)
 
 ---
 
@@ -141,14 +142,6 @@ message changed to **"HOEI COP"**. It still works: hold P2 Start + Fire + Left d
 
 Details: [docs/easter-egg-travelled.md](docs/easter-egg-travelled.md).
 
-## Other hidden text
-
-`textscan.py` turned up anti-piracy messages in other companies' games that I couldn't find documented,
-including **Time Pilot '84** ("THIS IS AN ILLEGAL DUPLICATE OF KONAMI'S ORIGINAL PCBOARD") and Rock-Ola's
-**Levers** ("THIS IS AN ILLEGAL COPY OF COPYRIGHTED SOFTWARE"), plus programmer credits and personal notes.
-Tracing the code shows neither warning is ever displayed: both sit in their games' message tables, but no code
-asks for them. List and sources: [docs/hidden-text-finds.md](docs/hidden-text-finds.md).
-
 ## So what was going on at the squash club?
 
 If the machine was a Lunar Rescue copy with the Taito name changed — *Destination Earth* or *Escape from
@@ -200,9 +193,8 @@ In MAME's debugger:
   the moment the trap reads it: `bpset 418c,1,{b@20e3=1;g}`. Reset, and hold P1 Start + P2 Start + Fire + Left
   from power-on; the trap runs about 4 seconds in, and the credits go to 2.
 
-Other collection-wide searches (any manufacturer): `sigsearch.py` (trap code and "kick me" wording),
-`textscan.py` (all hidden text, credits and anti-piracy messages flagged) and `clonediff.py` (exactly what each
-clone or bootleg changed). See [docs/USAGE.md](docs/USAGE.md).
+To search a whole collection, any manufacturer, for the trap code and its arming checks: `sigsearch.py`.
+See [docs/USAGE.md](docs/USAGE.md).
 
 Scan a whole folder of sets into one report (suspicious sets listed first):
 
