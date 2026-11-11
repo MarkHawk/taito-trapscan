@@ -40,8 +40,9 @@ OVER PLAY PLAYER PLAYERS PLEASE POINT POINTS PRESS PUSH READY ROUND SCORE SHIP S
 TO TODAY TRY TWO UP WAVE WE WELCOME WILL WITH YOU YOUR'''.split())
 
 
-def find_encodings(datas, min_anchors=2):
-    """datas: iterable of bytes (a set's ROM files). Returns [(base, step, space_codes, digit_base,
+def find_encodings(datas, min_anchors=2, min_len=0):
+    """datas: iterable of bytes (a set's ROM files). min_len: only use anchor words at least this long
+    (short ones like PLAY or COIN can match by chance in big ROMs). Returns [(base, step, space_codes, digit_base,
     anchors_seen)] for each encoding whose letters spell at least min_anchors different anchor words."""
     seen = collections.defaultdict(set)          # (base, step) -> anchor words found
     gaps = collections.defaultdict(collections.Counter)
@@ -51,6 +52,8 @@ def find_encodings(datas, min_anchors=2):
             continue
         diff = bytes(map((256).__rmod__, map(__import__('operator').sub, d[1:], d)))
         for ph in ANCHORS:
+            if len(ph) < min_len:
+                continue
             for step in (1, 2):
                 for m in _pattern(ph, step).finditer(diff):
                     i = m.start()

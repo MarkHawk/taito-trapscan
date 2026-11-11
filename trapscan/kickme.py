@@ -22,7 +22,8 @@ import copy
 from .emu8080 import Board
 
 # '?' = any one byte (the space, whose code varies)
-PHRASES = ['KICK?ME', 'KICK', 'FREE?GAME', 'FREE?CREDIT', 'FREE?PLAY']
+# (bare 'KICK' was dropped: four letters turn up by chance in big ROMs; the message was 'KICK ME FOR A FREE GAME')
+PHRASES = ['KICK?ME', 'FREE?GAME', 'FREE?CREDIT', 'FREE?PLAY']
 # FREE PLAY is ordinary DIP-switch/attract text in many games; listed so it's recognised, not alarming
 NORMAL = {'FREE?PLAY'}
 

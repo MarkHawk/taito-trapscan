@@ -18,7 +18,7 @@ is listed under the parent only. Known COMBO_76_ANY values: D6 72 / FE 34 (Space
 egg), D6 52 (Part II "TAITO CORP" egg), FE 54 (Lunar Rescue trap), FE 36 / FE 56 (Part II traps 1 / 2).
 Anything else is new and worth reading.
 
-KICK_TEXT: the "kick me for a free game" test - KICK / KICK ME / FREE GAME / FREE CREDIT wording in any
+KICK_TEXT: the "kick me for a free game" test - KICK ME / FREE GAME / FREE CREDIT wording in any
 letter encoding (ASCII, A=$00, A=$0A, every-second-code ...), any CPU. FREE PLAY is reported separately as
 FREE_PLAY_TEXT because it's ordinary DIP-switch text. Short words like KICK can turn up by chance in big
 ROMs, so read the bytes around a hit. Turn it off with --no-text.
@@ -134,7 +134,7 @@ def main():
                         for name, off, hexs, enc in scan_bytes(data):
                             if enc is not None:
                                 if encs is None:
-                                    encs = {(e[0], e[1]) for e in find_encodings(datas.values(), min_anchors=1)}
+                                    encs = {(e[0], e[1]) for e in find_encodings(datas.values(), min_anchors=2, min_len=5)}
                                 if enc not in encs:  # not how this game writes its text: a chance match
                                     name += '_WEAK'
                             rows.append((os.path.relpath(path, args.folder), fname, f'0x{off:04X}', name, hexs))
@@ -142,7 +142,7 @@ def main():
                 elif os.path.getsize(path) <= 64 * 1024 and not fn.lower().endswith(('.chd', '.7z', '.txt', '.md')):
                     data = open(path, 'rb').read()
                     for name, off, hexs, enc in scan_bytes(data):
-                        if enc is not None and enc not in {(e[0], e[1]) for e in find_encodings([data], min_anchors=1)}:
+                        if enc is not None and enc not in {(e[0], e[1]) for e in find_encodings([data], min_anchors=2, min_len=5)}:
                             name += '_WEAK'
                         rows.append((os.path.relpath(path, args.folder), '', f'0x{off:04X}', name, hexs))
                         if not args.quiet: live(rows[-1])
