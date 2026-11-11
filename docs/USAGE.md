@@ -34,6 +34,16 @@ Every `.zip` (or folder) is a set; merged zips also yield each clone inside them
 EASTER EGG? → CLEAN → OTHER HW? → ERROR. A set that fails to load is reported and skipped.
 Which sets to collect: [ROMLIST.md](ROMLIST.md).
 
+## Search a whole MAME collection for the trap code
+
+```bash
+python3 sigsearch.py /path/to/mame/roms -o sigsearch.csv
+```
+
+Byte-searches every zip (clone folders included) for the exact trap routines, their arming checks, a
+relocated/edited version of each, and any `ANI $76` combo check. It doesn't need to lay out or run anything,
+so it covers games on any board. Zips over 4 MB are skipped (`--max-zip-mb` to change).
+
 ## Merged ROM sets and clones
 
 Merged MAME sets keep each clone's differing ROMs in a sub-folder of the parent zip (e.g. `lrescue.zip` →
