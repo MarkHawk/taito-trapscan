@@ -25,7 +25,8 @@ in 0 / ani $0A / cpi $0A / jz $0000   ; port 0 bits 1 AND 3 high -> reset the ma
 ana a / rnz                           ; exactly one high -> stay armed
 mvi $20E3,0                           ; both low -> disarm
 ```
-MAME doesn't define those port-0 bits (they read 0), so the trap disarms at frame 18.
+MAME doesn't define those port-0 bits (they read 0), so the trap disarms at frame 18 (and the check keeps
+running through attract mode, clearing it again).
 On hardware where one of them reads high, it stays live.
 
 **Emulator result:** with port 0 = $02 and the combo held during attract → credits 2, game starts.
@@ -42,9 +43,11 @@ Genuine port values → nothing.
 - **"TAITO CORP" easter egg ($4519):** hold Start2 + Fire + Right, then Start1 + Fire + Left → prints
   an encoded "TAITO CORP" string (stored at $0D6F, each byte +$3F).
 - **PRESET MODE ($45B9):** opened at game start when DIP IN2 bit 3 is on (MAME: "Preset Mode: Name Entry").
-  Fire exits, Start1 starts, Start2 steps a counter, Left/Right toggle $20E4.
+  Fire or Start1 leaves it, Start2 steps a counter, Left/Right toggle a setting at $20E4.
 
 ## Try it in MAME
 1. `bpset 419d` – never hit on a normal run.
-2. After the attract screens start: `b@20e3=1`, then hold P1 Start + P2 Start + Fire + Left.
-   Credits go to 2 (both $20EB and $20CC), and a game starts.
+2. The board check ($459C) clears $20E3 again and again in attract mode, so a one-off `b@20e3=1` doesn't stick.
+   Set it at the moment the trap reads it instead: `bpset 418c,1,{b@20e3=1;g}`.
+3. Reset and hold P1 Start + P2 Start + Fire + Left from power-on. The trap runs once per attract cycle, about
+   4 seconds in (frame 233): credits go to 2 (both $20EB and $20CC), and the held Start begins a game.

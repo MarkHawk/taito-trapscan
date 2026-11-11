@@ -13,9 +13,10 @@ Work RAM $2000–$23FF, video RAM $2400–$3FFF.
 ```
 47D8  call $037C        ; read player-1 controls (port 1)
 47DB  ani  $76          ; keep bits 1,2,4,5,6
-47DE  cpi  $54          ; need: Start1(b2) + Fire(b4) + Right(b6), with Left(b5) and Start2(b1) released
+47DD  cpi  $54          ; need: Start1(b2) + Fire(b4) + Right(b6), with Left(b5) and Start2(b1) released
 47DF  rnz
-47E0  lxi  h,$20ED      ; "armed" flag
+47E0  mvi  l,$ED        ; HL = $20ED "armed" flag, built in two halves
+47E2  mvi  h,$20
 47E4  mov  a,m / ana a
 47E6  rz                ; not armed -> do nothing
 47E7  dcx h / dcx h     ; -> $20EB credits

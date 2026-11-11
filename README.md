@@ -37,7 +37,8 @@ there's one more place that writes it, tucked into the extra ROM at `$4000`:
 47DB  ani  $76         ; keep Start1, Start2, Fire, Left, Right
 47DD  cpi  $54         ; = Start1 + Fire + Right, nothing else
 47DF  rnz
-47E0  lxi  h,$20ED     ; the "armed" flag
+47E0  mvi  l,$ED      ; HL = $20ED, the "armed" flag - built in two
+47E2  mvi  h,$20      ;   halves, so "$20ED" never appears in the code
 47E4  mov  a,m
 47E5  ana  a
 47E6  rz               ; not armed -> do nothing
@@ -68,7 +69,7 @@ Part II hides the same idea more carefully:
   restarts the game if they differ, so poking the credit counter in a debugger just resets the
   machine. The hidden routine writes both copies.
 - **The trigger is the hardware, not the text.** At power-up the game reads two input lines that
-  aren't connected to anything on the genuine board. Both low: trap disarmed. One high: trap stays
+  MAME doesn't connect to anything (presumably unused on Taito's own board). Both low: trap disarmed. One high: trap stays
   armed. Both high: the game resets itself.
 - **There's a second trap that doesn't work.** It's armed if five bytes of the program ROM have been
   changed, but it reads the controls through a helper that leaves a register pointing at ROM. Its
@@ -90,7 +91,8 @@ Scanning a full MAME 0.277 collection (144 sets) and running each Lunar Rescue c
 | Rescate Lunar (`resclunar`) | Niemer S.A. (Spain) | disabled: `RZ`→`RET` at `$47E6`, plus its own ROM checksum |
 | Lunar Rescue Model Racing / Artic copies, Galaxy Rescue | various | switched off: Taito copyright left intact |
 
-Two pirate copies paid out free games, and two other pirates found the trap and removed it.
+Two pirate copies paid out free games. Two others don't: Rescate Lunar patches the trap out directly, and
+Moon Lander ignores the controls while the game is idle, which blocks it (whether deliberately isn't clear).
 All six Space Invaders Part II sets carry their trap too; Midway's *Space Invaders Deluxe* even updated one check to
 match its own changes.
 
@@ -108,7 +110,7 @@ know which board it was, but the memory fits the code, and those copies were rea
 
 ## Was this Taito policy?
 
-On the evidence so far, it was a 1979–80 tactic:
+On the evidence so far, it was a 1979 tactic:
 
 - The original 1978 **Space Invaders** has no trap, only an easter egg.
 - Both 1979 games put the trap in the **add-on ROM at `$4000`**, and tie it to an anti-copy check.
@@ -124,7 +126,7 @@ Taito's 68705 protection chip: by 1983 the protection lived in hardware.
 ## How it was found
 
 1. Disassembled the program ROMs: 6502 for Lunar Lander, Intel 8080 for the Taito games.
-2. Found the credit counter from the coin routine, then traced **every** instruction that writes it.
+2. Found the credit counter by inserting coins in the emulator, then traced **every** instruction that writes it.
    Anything other than "coin in" and "start pressed" is suspicious.
 3. Ran the ROMs in a purpose-built 8080 emulator of the Space Invaders board, held the combos, and
    simulated a bootleg by altering one letter of "TAITO". The credits appeared; on the unmodified ROM
@@ -147,7 +149,9 @@ In MAME's debugger:
 
 - **Lunar Rescue:** after **both** title screens (~10 s from power-on), enter `b@20ed=1`, then hold
   P1 Start + Fire + Right once the demo starts.
-- **Space Invaders Part II:** in attract mode, enter `b@20e3=1` and hold P1 Start + P2 Start + Fire + Left.
+- **Space Invaders Part II:** the board check clears the flag again and again during attract mode, so set it at
+  the moment the trap reads it: `bpset 418c,1,{b@20e3=1;g}`. Reset, and hold P1 Start + P2 Start + Fire + Left
+  from power-on; the trap runs about 4 seconds in, and the credits go to 2.
 
 Scan a whole folder of sets into one report (suspicious sets listed first):
 
