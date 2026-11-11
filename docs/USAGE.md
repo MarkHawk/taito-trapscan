@@ -85,6 +85,10 @@ shows (SCORE, CREDIT, PLAYER, INSERT COIN...), decodes all the text in its ROMs,
 - writes `textscan/report.md` (flagged text by set, the interesting ones first; copyright years after);
 - writes `textscan/text/<set>.txt`, every readable string in the set with file and offset, to skim by eye.
 
+Only the strong lines (PIRATE, STOLEN, PROGRAMMED BY, name FOR company, THANKS, HELLO, LOVE, SECRET...) are
+printed live and listed first in the report, marked ★; test menus, LICENSED TO, VERSION and the like follow,
+then copyright years. `--verbose` prints every flagged line live.
+
 On the 36-zip test collection it turned up "BY JOEL KREGER FOR MIDWAY" in Space Invaders II, "B I LOVE YOU" in
 Jungle King and "DARLING I LOVE YOU" in a Lupin III set. A string being in the ROM doesn't mean it's shown on
 screen; check anything new against [The Cutting Room Floor](https://tcrf.net) before calling it undiscovered.

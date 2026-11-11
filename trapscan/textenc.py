@@ -134,6 +134,23 @@ def plausible(words):
     return True
 
 
+# The strong tier: words that are rarely ordinary game text. Shown live and listed first in the report.
+STRONG = re.compile(
+    r'(?<![A-Z])('
+    r'PIRATE[SD]?|PIRACY|ILLEGAL\w*|STOLEN|STEAL\w*|THIEF|THIEVES|BOOTLEG\w*|COUNTERFEIT|UNAUTHORI\w*|COPIED|'
+    r'(PROGRAMM?ED|DESIGNED|WRITTEN|CODED|CREATED|DEVELOPED|MADE) BY|PROGRAMMERS?|AUTHORS?|'
+    r'THANKS?|GREETINGS?|DEDICATED|HELLO|LOVE|DARLING|WIFE|MOM|MUM|STUPID|IDIOT|DUMMY|SORRY|JOKE|'
+    r'SECRET|HIDDEN|KICK ME|FREE GAME|'
+    r'[A-Z]{2,} FOR (ATARI|MIDWAY|BALLY|SEGA|GREMLIN|WILLIAMS|TAITO|NAMCO|STERN|CINEMATRONICS|EXIDY|CENTURI|'
+    r'KONAMI|NINTENDO|UNIVERSAL|NICHIBUTSU|IREM|CAPCOM|DATA EAST|SNK|MYLSTAR|GOTTLIEB)'
+    r')(?![A-Z])')
+
+
+def strong(s):
+    """True if the text has a strong-tier word (credits with a name, anti-piracy, personal messages)."""
+    return bool(STRONG.search(s))
+
+
 def flags(s):
     hit = []
     for cat, rx in FLAG_RX.items():

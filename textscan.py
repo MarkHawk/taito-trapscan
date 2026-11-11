@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Decode all the text hidden in a collection's ROMs, whatever letter codes each game uses, and flag the
-interesting bits (printed live as found): programmer credits, anti-piracy wording, developer messages, years.
+interesting bits (strong ones printed live as found): programmer credits, anti-piracy wording, developer messages, years.
 
   python3 textscan.py <rom folder> [-o textscan] [--max-zip-mb 4] [--all]
 
@@ -19,7 +19,7 @@ import sys
 import zipfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from trapscan.textenc import find_encodings, strings, flags   # noqa: E402
+from trapscan.textenc import find_encodings, strings, flags, strong   # noqa: E402
 from trapscan import skiplist   # noqa: E402
 
 MAX_FILE = 1024 * 1024
@@ -48,6 +48,7 @@ def main():
     ap.add_argument('-o', '--out', default='textscan')
     ap.add_argument('--max-zip-mb', type=float, default=4.0)
     skiplist.add_args(ap)
+    ap.add_argument('--verbose', action='store_true', help='print every flagged line live, not just the strong ones')
     ap.add_argument('--all', action='store_true', help='list every set in report.md, not only flagged ones')
     args = ap.parse_args()
     os.makedirs(os.path.join(args.out, 'text'), exist_ok=True)
@@ -55,7 +56,7 @@ def main():
     skip = skiplist.parse(args)
     zips = sorted(os.path.join(r, f) for r, _, fs in os.walk(args.folder) for f in fs
                   if f.lower().endswith('.zip') and not (skip and skiplist.skipped(f, skip)))
-    report_top, report, n_sets, n_enc, n_flag = [], [], 0, 0, 0
+    report_strong, report_top, report, n_sets, n_enc, n_flag = [], [], [], 0, 0, 0
     for zi, path in enumerate(zips, 1):
         if zi % 500 == 0:
             print(f'  {zi} zips...', file=sys.stderr, flush=True)
@@ -91,6 +92,7 @@ def main():
             if flagged or args.all:
                 n_flag += bool(flagged)
                 interesting = any(c != 'year' for _, _, _, f in flagged for c, _ in f)
+                is_strong = any(strong(s) for _, _, s, _ in flagged)
                 block = [f'\n## {set_name}  ({os.path.basename(path)})\n']
                 seen = set()
                 for fn, off, s, f in flagged:
@@ -98,17 +100,21 @@ def main():
                         continue
                     seen.add(s)
                     cats = ', '.join(sorted({c for c, _ in f}))
-                    block.append(f'- `{s[:100]}`  — {cats}  ({fn} +{off:05X})')
-                    if cats != 'year':
+                    star = '**★** ' if strong(s) else ''
+                    block.append(f'- {star}`{s[:100]}`  — {cats}  ({fn} +{off:05X})')
+                    if strong(s) or args.verbose:
                         print(f'  {set_name:12} [{cats}] {s[:90]}', flush=True)
-                (report_top if interesting else report).extend(block)
+                (report_strong if is_strong else report_top if interesting else report).extend(block)
 
     with open(os.path.join(args.out, 'report.md'), 'w') as fh:
         fh.write(f'# Hidden text scan of {args.folder}\n\n{n_sets} sets; encoding found in {n_enc}; '
                  f'{n_flag} with flagged text. Full text per set in text/.\n'
                  'Flags: credits (PROGRAM, DESIGN, BY...), anti-piracy (COPY, PIRATE, ILLEGAL...), '
                  'dev (TEST, SECRET, HELLO...), year (19xx). Check finds against tcrf.net before calling them new.\n')
-        fh.write('\n# Sets with credits, anti-piracy or developer text\n' + '\n'.join(report_top) + '\n')
+        fh.write('\n# ★ Strong: named credits, anti-piracy, personal or secret messages\n'
+                 'Lines marked ★ have a strong word (PIRATE, STOLEN, PROGRAMMED BY, THANKS, HELLO, LOVE, SECRET...).\n'
+                 + '\n'.join(report_strong) + '\n')
+        fh.write('\n# Other flagged text (test menus, LICENSED TO, BY..., VERSION)\n' + '\n'.join(report_top) + '\n')
         fh.write('\n# Sets with only a copyright year\n' + '\n'.join(report) + '\n')
     print(f'\n{n_sets} sets, encoding found in {n_enc}, {n_flag} with flagged text. '
           f'Report: {args.out}/report.md, full text: {args.out}/text/')

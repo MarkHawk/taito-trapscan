@@ -105,6 +105,17 @@ match its own changes.
 read-only memory, so nothing pays out. Without the bug, Moon Base would have handed out free games.
 (The second set, `moonbasea`, kept the original bytes, so the trap stays off there.) Full details: [docs/bootleg-results.md](docs/bootleg-results.md).
 
+## Bonus: the easter egg that travelled
+
+Space Invaders' hidden "TAITO COP" message turns up in other companies' games built on Taito's code. In
+**Space Stranger** (1978, the ROM says "HOEI CORP") the egg was moved to the new board's input port and its
+message changed to **"HOEI COP"**. It still works: hold P2 Start + Fire + Left during the demo, then P1 Start
++ Fire. Nichibutsu's **Rolling Crash** kept the egg's code but blanked its message to spaces.
+
+![Space Stranger: HOEI COP](docs/img/sstrangr-hoei-cop.png)
+
+Details: [docs/easter-egg-travelled.md](docs/easter-egg-travelled.md).
+
 ## So what was going on at the squash club?
 
 If the machine was a Lunar Rescue copy with the Taito name changed — *Destination Earth* or *Escape from
