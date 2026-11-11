@@ -58,7 +58,10 @@ def is_z80_set(path):
     import os
     if os.path.splitext(os.path.basename(path))[0] in ('crbaloon',):
         return True
-    sizes = [len(d) for d in read_files(path).values()]
+    from trapscan.romload import split_sets
+    parent = os.path.splitext(os.path.basename(path.rstrip('/\\')))[0]
+    own = split_sets(read_files(path), parent)[parent]        # the parent's own files only, not its clones'
+    sizes = [len(d) for d in own.values()]
     return sum(1 for x in sizes if x in (4096, 8192)) >= 4
 
 

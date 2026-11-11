@@ -53,7 +53,8 @@ class Scanner:
         return False
 
     def find_credit_counter(self):
-        """Coin routine pattern: LDA cr / CPI 9 or 99 / ... ADI 1 / DAA / STA cr."""
+        """Coin routine: LDA cr .. ADI 1 / DAA / STA cr ; or start: [MVI B,$99 .. ADD B | ADI $99/$98] / DAA / STA cr.
+        Static guess only - batch.py confirms it by inserting coins in the emulator where it can."""
         found = {}
         for a in self.addrs:
             if self.rd(a) == 0x3A:
@@ -64,7 +65,6 @@ class Scanner:
                     if win[i] == 0xC6 and win[i + 1] == 0x01 and win[i + 2] == 0x27 and win[i + 3] == 0x32 \
                             and (win[i + 4] | win[i + 5] << 8) == cr:
                         found[cr] = found.get(cr, 0) + 1
-        # Start-button deduction: ADI $99/$98 (= -1/-2 in BCD) ; DAA ; STA cr   (any board)
         for a in self.addrs:
             if self.rd(a) == 0xC6 and self.rd(a + 1) in (0x99, 0x98) and self.rd(a + 2) == 0x27 \
                     and self.rd(a + 3) == 0x32:
@@ -77,7 +77,7 @@ class Scanner:
     def scan(self):
         rd, rw = self.rd, self.rw
         inputs = {a for a in self.addrs if self.reads_input(a)}
-        self.credit = self.find_credit_counter()
+        self.credit = self.known_credit if getattr(self, 'known_credit', None) is not None else self.find_credit_counter()
         for a in self.addrs:
             o = rd(a)
             # COMBO

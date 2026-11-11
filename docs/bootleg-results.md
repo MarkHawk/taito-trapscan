@@ -38,3 +38,20 @@ credit copy, the board check, the ROM check and both traps.
 
 `sflush` (6800 CPU), `shuttlei`, `skylove` (Omori boards), `gunchamps`, `attackfc` (encrypted) / `attackfcu`
 (different board), `starw1` (Galaxy Wars bootleg, layout unresolved).
+
+## Credit-writer audit (8080 games)
+
+Credit counter found by inserting coins in the emulator; then every instruction that can write it traced,
+including disguised and offset pointers (`trapscan/audit.py`).
+
+| Game | Writers of the credit counter | Verdict |
+|---|---|---|
+| Lunar Rescue + clones | coin, start, **trap $47E9** | trap |
+| Space Invaders Part II, Deluxe, Moon Base | coin, start, **trap $419D** | trap |
+| Space Invaders (all Taito revisions) | coin, start | clean |
+| Space Chaser (all sets) | coin, start (+ power-up RAM clear) | clean |
+| Balloon Bomber, Lupin III, Polaris, Indian Battle, Steel Worker, Galactica | coin, start | clean |
+
+Destination Earth adds its own coin routine ($50A7, mirrored at $54A7) giving 3 or 6 credits per coin – a
+pirate coinage change, not a trap. Not covered: Straight Flush (6800 CPU) and the Z80 games (no emulator, so no
+coin test – static combo search only).
