@@ -32,6 +32,7 @@ import zipfile
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from trapscan.kickme import best_text_hits, NORMAL   # noqa: E402
+from trapscan.textenc import find_encodings   # noqa: E402
 from trapscan import skiplist   # noqa: E402
 
 # (name, regex over bytes, what it is). Exact = byte-for-byte from the ROMs; loose = same instruction
@@ -63,8 +64,11 @@ SIGS = [
 SIGS = [(n, re.compile(p, re.S), d) for n, p, d in SIGS]
 
 
-TEXT_SIGS = [('KICK_TEXT', 'kick-me / free-game wording in any letter encoding (the "kick me for a free game" test)'),
-             ('FREE_PLAY_TEXT', 'FREE PLAY wording (usually ordinary DIP-switch text)')]
+TEXT_SIGS = [('KICK_TEXT', 'kick-me / free-game wording, in the letter codes the game uses for its own text'),
+             ('FREE_PLAY_TEXT', 'FREE PLAY wording (usually ordinary DIP-switch text)'),
+             ('KICK_TEXT_WEAK', 'same wording but in an encoding the game does not use for its text: almost always a '
+                                'chance match in code or graphics (CSV only, not shown live)'),
+             ('FREE_PLAY_TEXT_WEAK', 'FREE PLAY in an encoding the game does not use (chance match)')]
 TEXT = [True]
 
 
@@ -72,12 +76,12 @@ def scan_bytes(data):
     if TEXT[0]:
         for off, ph, base, step in best_text_hits(data):
             name = 'FREE_PLAY_TEXT' if ph.replace(' ', '?') in NORMAL else 'KICK_TEXT'
-            yield name, off, f'"{ph}" (A=${base:02X}, step {step}) ' + data[off:off + len(ph)].hex(' ').upper()
+            yield name, off, f'"{ph}" (A=${base:02X}, step {step}) ' + data[off:off + len(ph)].hex(' ').upper(), (base, step)
     for name, rx, _ in SIGS:
         for m in rx.finditer(data):
             if name == 'COMBO_76_ANY' and bin(m.group(0)[-1]).count('1') < 2:
                 continue                      # one button (e.g. CPI $40 = Right while playing), not a combo
-            yield name, m.start(), m.group(0).hex(' ').upper()
+            yield name, m.start(), m.group(0).hex(' ').upper(), None
 
 
 KNOWN_COMBOS = {'E6 76 D6 72', 'E6 76 FE 34', 'E6 76 D6 52', 'E6 76 FE 54', 'E6 76 FE 36', 'E6 76 FE 56'}
@@ -89,7 +93,7 @@ def live(row):
     zipname, fn, off, name, hexs = row
     if name == 'COMBO_76_ANY' and hexs in KNOWN_COMBOS:
         return
-    if name == 'FREE_PLAY_TEXT':
+    if name.startswith('FREE_PLAY_TEXT') or name.endswith('_WEAK'):
         return
     print(f'  HIT {name:16} {zipname} {fn} {off}  {hexs}', flush=True)
 
@@ -123,16 +127,23 @@ def main():
                     if zips % 500 == 0:
                         print(f'  {zips} zips...', file=sys.stderr, flush=True)
                     with zipfile.ZipFile(path) as z:
-                        for info in z.infolist():
-                            if info.is_dir() or info.file_size > 1024 * 1024:
-                                continue
-                            data = z.read(info)
-                            for name, off, hexs in scan_bytes(data):
-                                rows.append((os.path.relpath(path, args.folder), info.filename, f'0x{off:04X}', name, hexs))
-                                if not args.quiet: live(rows[-1])
+                        datas = {info.filename: z.read(info) for info in z.infolist()
+                                 if not info.is_dir() and info.file_size <= 1024 * 1024}
+                    encs = None                      # the set's own text encodings, worked out on first text hit
+                    for fname, data in datas.items():
+                        for name, off, hexs, enc in scan_bytes(data):
+                            if enc is not None:
+                                if encs is None:
+                                    encs = {(e[0], e[1]) for e in find_encodings(datas.values(), min_anchors=1)}
+                                if enc not in encs:  # not how this game writes its text: a chance match
+                                    name += '_WEAK'
+                            rows.append((os.path.relpath(path, args.folder), fname, f'0x{off:04X}', name, hexs))
+                            if not args.quiet: live(rows[-1])
                 elif os.path.getsize(path) <= 64 * 1024 and not fn.lower().endswith(('.chd', '.7z', '.txt', '.md')):
                     data = open(path, 'rb').read()
-                    for name, off, hexs in scan_bytes(data):
+                    for name, off, hexs, enc in scan_bytes(data):
+                        if enc is not None and enc not in {(e[0], e[1]) for e in find_encodings([data], min_anchors=1)}:
+                            name += '_WEAK'
                         rows.append((os.path.relpath(path, args.folder), '', f'0x{off:04X}', name, hexs))
                         if not args.quiet: live(rows[-1])
             except Exception as ex:  # unreadable or odd archive: note and carry on
