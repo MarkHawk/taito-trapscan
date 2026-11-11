@@ -27,24 +27,59 @@ PHRASES = ['KICK?ME', 'KICK', 'FREE?GAME', 'FREE?CREDIT', 'FREE?PLAY']
 NORMAL = {'FREE?PLAY'}
 
 
+import operator
+import re
+
+
+def _pattern(ph, step):
+    """Regex over the byte-difference string: letter-to-letter steps fixed, steps next to a gap free."""
+    out = b''
+    for a, b in zip(ph, ph[1:]):
+        if a == '?' or b == '?':
+            out += b'.'
+        else:
+            out += re.escape(bytes([(step * (ord(b) - ord(a))) & 0xFF]))
+    return re.compile(b'(?=' + out + b')', re.S)
+
+
+_PATTERNS = {}
+
+
+def _check(data, i, ph, step):
+    """Full check at offset i: letters consecutive from one base code, gaps not letters. Returns base or None."""
+    letters = [(k, ord(c) - 65) for k, c in enumerate(ph) if c != '?']
+    k0, l0 = letters[0]
+    base = data[i + k0] - step * l0
+    if base < 0 or base + step * 25 > 255:
+        return None
+    if not all(data[i + k] == base + step * l for k, l in letters):
+        return None
+    gaps = [data[i + k] for k, c in enumerate(ph) if c == '?']
+    if any(base <= g <= base + step * 25 and (g - base) % step == 0 for g in gaps):
+        return None              # a space must not itself be a letter (else e.g. 'KICKXME' would match)
+    return base
+
+
 def text_hits(data, phrases=PHRASES):
-    """Yield (offset, phrase, base code of 'A', step) for each phrase found in any letter encoding."""
-    n = len(data)
+    """Yield (offset, phrase, base code of 'A', step) for each phrase found in any letter encoding.
+
+    Works on the differences between neighbouring bytes, which are the same whatever code 'A' has, so one
+    regex per phrase finds every encoding at C speed; each candidate is then checked in full."""
+    data = bytes(data)
+    if len(data) < 2:
+        return
+    diff = bytes(map((256).__rmod__, map(operator.sub, data[1:], data)))
     for ph in phrases:
-        letters = [(k, ord(c) - 65) for k, c in enumerate(ph) if c != '?']
-        k0, l0 = letters[0]
         # every-second-code encodings only for longer phrases: a 4-letter word in steps of 2 matches
         # ordinary program bytes by chance (seen in Astro Fighter, Gun Champ and Invaders Part II bootlegs)
         for step in ((1, 2) if len(ph) >= 7 else (1,)):
-            for i in range(n - len(ph) + 1):
-                base = data[i + k0] - step * l0
-                if base < 0 or base + step * 25 > 255:
+            rx = _PATTERNS.get((ph, step)) or _PATTERNS.setdefault((ph, step), _pattern(ph, step))
+            for m in rx.finditer(diff):
+                i = m.start()
+                if i + len(ph) > len(data):
                     continue
-                if all(data[i + k] == base + step * l for k, l in letters):
-                    # a space must not itself be a letter (else e.g. 'KICKXME' would match)
-                    gaps = [data[i + k] for k, c in enumerate(ph) if c == '?']
-                    if any(base <= g <= base + step * 25 and (g - base) % step == 0 for g in gaps):
-                        continue
+                base = _check(data, i, ph, step)
+                if base is not None:
                     yield i, ph.replace('?', ' '), base, step
 
 
