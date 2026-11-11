@@ -1,0 +1,50 @@
+# Space Invaders Part II (Taito, 1979, MAME `invadpt2`) – hidden routines
+
+ROMs: pv01–pv04 at $0000–$1FFF, pv05 at $4000–$47FF. Same 8080 hardware family as Lunar Rescue.
+Controls are read through $1F49, which jumps via `PCHL` to $15E8 (port 1 for P1, port 2 for P2).
+Bits used below (port 1): b1 Start2, b2 Start1, b4 Fire, b5 Left, b6 Right.
+
+## Credits are guarded
+- Credits: $20EB (BCD). Shadow copy: **$20CC**.
+- The interrupt handler at $0094 compares the two copies and jumps to $0003 (restart) if they differ,
+  so simply poking $20EB resets the game. Both hidden routines write both copies.
+- Neither hidden routine has "$20EB" in its code: it's built at run time (`MVI L,$EA / INR L`,
+  `MVI H,$1F / INR H / MVI L,$EC / DCR L`).
+
+## Trap 1 – works: Start1 + Start2 + Fire + Left, attract mode ($418F)
+```
+4186  mvi h,$1F / mvi l,$E4 / inr h / dcr l   ; HL = $20E3 (arming flag)
+418C  mov a,m / ana a / rz
+418F  call $1F49 / ani $76 / cpi $36          ; Start1+Start2+Fire+Left, Right released
+4197  HL -> $20EB : mvi m,$02                  ; credits = 2
+419F  mvi l,$CC   : mvi m,$02                  ; shadow = 2
+```
+**Arming flag $20E3:** set to 1 at power-up. At $459C (called from $1F53 in attract):
+```
+in 0 / ani $0A / cpi $0A / jz $0000   ; port 0 bits 1 AND 3 high -> reset the machine
+ana a / rnz                           ; exactly one high -> stay armed
+mvi $20E3,0                           ; both low -> disarm
+```
+MAME doesn't define those port-0 bits (they read 0), so the trap disarms at frame 18.
+On hardware where one of them reads high, it stays live.
+
+**Emulator result:** with port 0 = $02 and the combo held during attract → credits 2, game starts.
+Genuine port values → nothing.
+
+## Trap 2 – dead: Start1 + Start2 + Fire + Right ($0A2D)
+- Arming flag $20E2, cleared at $454F if five ROM bytes at $174C–$1750 are intact
+  (D6 DB D0 C8 DB). Patch them and the flag stays set.
+- Combo check: `call $1F49 / ani $76 / cpi $56`.
+- **Bug:** $1F49 returns with H = $15, and this routine never reloads H, so its "credit" stores hit
+  $15EB/$15CC – ROM – and do nothing. Confirmed in the emulator: the store executes, credits stay 0.
+
+## Also in the extra ROM (not credit-related)
+- **"TAITO CORP" easter egg ($4519):** hold Start2 + Fire + Right, then Start1 + Fire + Left → prints
+  an encoded "TAITO CORP" string (stored at $0D6F, each byte +$3F).
+- **PRESET MODE ($45B9):** opened at game start when DIP IN2 bit 3 is on (MAME: "Preset Mode: Name Entry").
+  Fire exits, Start1 starts, Start2 steps a counter, Left/Right toggle $20E4.
+
+## Try it in MAME
+1. `bpset 419d` – never hit on a normal run.
+2. After the attract screens start: `b@20e3=1`, then hold P1 Start + P2 Start + Fire + Left.
+   Credits go to 2 (both $20EB and $20CC), and a game starts.
