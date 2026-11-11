@@ -98,6 +98,16 @@ def table(base, step, space, digit_base):
     t = bytearray(256)
     for k in range(26):
         t[base + step * k] = 65 + k
+    if base == 0x41 and step == 1:
+        for c in b",.!?'-:()/&":       # ASCII punctuation reads as itself
+            if not t[c]:
+                t[c] = c
+        # ASCII games (Atari, Williams...) often mark a string's last character by setting its top bit
+        for c in range(0x20, 0x60):
+            if t[c] and not t[c | 0x80]:
+                t[c | 0x80] = t[c]
+        if not t[0xA0]:
+            t[0xA0] = 32
     for s in space:              # the gap seen inside GAME OVER etc. wins over a digit guess
         if t[s] == 0:
             t[s] = 32
@@ -112,17 +122,32 @@ def table(base, step, space, digit_base):
 def strings(data, enc, min_len=4):
     """Decoded text runs [(offset, text)] that look like real words."""
     base, step, space, digits = enc[:4]
-    dec = bytes(data).translate(table(base, step, space, digits))
+    data = bytes(data)
+    dec = data.translate(table(base, step, space, digits))
+    runs = [(m.start(), m.group()) for m in re.finditer(rb'[^\x00]+', dec)]
+    if base == 0x41 and step == 1:
+        # split after a top-bit character: that's how these games mark the end of a string
+        split = []
+        for st, g in runs:
+            cut = st
+            for k in range(len(g)):
+                if data[st + k] >= 0xA0:
+                    split.append((cut, dec[cut:st + k + 1])); cut = st + k + 1
+            if cut < st + len(g):
+                split.append((cut, dec[cut:st + len(g)]))
+        runs = split
     out = []
-    for m in re.finditer(rb'[^\x00]{%d,}' % min_len, dec):
-        s = m.group().decode().strip()
+    for start, g in runs:
+        if len(g) < min_len:
+            continue
+        s = g.decode().strip()
         words = re.findall(r'[A-Z]+', s)
         if not words or sum(len(w) for w in words) < 3:
             continue
         # keep it if it has a common word, a flagged word, a year, or several words of 3+ letters
         if any(w in VOCAB for w in words if len(w) >= 2) or flags(s) or YEAR.search(s) or \
                 (len([w for w in words if len(w) >= 3]) >= 2 and ' ' in s and plausible(words)):
-            out.append((m.start() + (len(m.group()) - len(m.group().lstrip())), s))
+            out.append((start + (len(g) - len(g.lstrip())), s))
     return out
 
 
