@@ -242,7 +242,7 @@ def build_clone(parent_mem, parent_layout, clone_files, bases=None, base_name=No
     top = max([a + s for a, _, s in parent_layout] + [o + s for o, _, s, _ in placed])
     extra = []
     for fn, size, s in unplaced:
-        slot = max(top, 0x4000) if top > 0x2000 else top
+        slot = 0x4000 if 0x2000 <= top < 0x4000 else top    # $2000-$3FFF is RAM, never ROM
         mem[slot:slot + size] = progs[fn]
         extra.append((slot, fn, size))
         notes.append(f'NOTE: {fn} matches nothing in the parent (best {s:.0%}) - extra code, '
