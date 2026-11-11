@@ -72,6 +72,12 @@ Part II hides the same idea more carefully:
   trap disarmed. Both high (what an unconnected TTL input usually reads): the game resets itself. Exactly one
   high: the trap stays armed.
 
+  Taito's own schematic of the I/O board (PV070010, "P.T-GAME P.C. BOARD") confirms it: the port is read
+  through four 74LS153 multiplexers, and every unused input has a 1k pull-up to +5V – except pin 10 of the
+  multiplexers at positions 4 and 9, which also have a **ground link on the same node**. Those are the two lines
+  the code checks. (Bit 1 is on chip 4 and bit 3 on chip 9, matching MAME's notes; chip 9's link also grounds
+  port 1 bit 3, which MAME notes as tied low too.)
+
   So the check isn't looking for any old difference: it's looking for two specific ground links. A copier who
   missed both got a board that won't start; one who missed one, or wired it differently, got a board that gives
   free games. Whether Taito hid those links (under a chip, on the solder side, a jumper wire) or they were

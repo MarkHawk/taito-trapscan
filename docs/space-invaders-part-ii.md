@@ -32,6 +32,13 @@ On a board where one of them reads high (one ground link missing or wired differ
 both high (both links missing: unconnected TTL inputs usually read high), the game resets. Whether Taito's ground
 links were hidden or ordinary tracks is unknown – a question for owners of real boards.
 
+**Taito's schematic (PV070010 I/O board, "P.T-GAME P.C. BOARD", PVN00004):** the CPU reads ports 0–2 through
+four 74LS153s (positions 4, 5, 9, 10; selected by A8/A9). Port 0 is input C0 of each. Every unused C0 input has a
+1k pull-up to +5V; pin 10 (2C0) of **chip 4** and **chip 9** also has a ground symbol on the same node, so those two
+read low. That's port 0 bits 1 and 3 – the pair the trap checks. Chip 9's ground link also takes in pin 11 (2C1),
+port 1 bit 3, which MAME likewise notes as tied low. The schematic draws them as plain ground connections; whether
+the copper link is visible on the board (or under the chip) needs a look at the solder side around chips 4 and 9.
+
 Prior knowledge: the reset was identified in 2022 on the Arcade Museum forum (thread "Taito 3 board space invaders
 part 2 bad shifter causes resets?"), described as a guard against swapping Part II ROMs into a Space Invaders board,
 with the fix "NOP out the jp nz,$0000" (it's `JZ $0000` at $45A2 here). The lines are input 0 (pin 10) of the
