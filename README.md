@@ -92,7 +92,13 @@ Scanning a full MAME 0.277 collection (144 sets) and running each Lunar Rescue c
 
 Two pirate copies paid out free games, and two other pirates found the trap and removed it.
 All six Space Invaders Part II sets carry their trap too; Midway's *Space Invaders Deluxe* even updated one check to
-match its own changes. Full details: [docs/bootleg-results.md](docs/bootleg-results.md).
+match its own changes.
+
+**Moon Base Zeta** (`moonbase`, Taito / Nichibutsu) is the near miss. It changed the five ROM bytes that Part II's
+*second* trap checks, without updating the check – so that trap switches on, and in the emulator the combo
+(P1 Start + P2 Start + Fire + Right) is accepted. But that trap has Taito's bug: it writes the "2 credits" into
+read-only memory, so nothing pays out. Without the bug, Moon Base would have handed out free games.
+(The second set, `moonbasea`, kept the original bytes, so the trap stays off there.) Full details: [docs/bootleg-results.md](docs/bootleg-results.md).
 
 ## So what was going on at the squash club?
 
