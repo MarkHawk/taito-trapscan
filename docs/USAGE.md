@@ -44,6 +44,19 @@ Byte-searches every zip (clone folders included) for the exact trap routines, th
 relocated/edited version of each, and any `ANI $76` combo check. It doesn't need to lay out or run anything,
 so it covers games on any board. Zips over 4 MB are skipped (`--max-zip-mb` to change).
 
+It also runs the **"kick me" test**: it looks for KICK / KICK ME / FREE GAME / FREE CREDIT wording in any letter
+encoding (ASCII, A=$00, A=$0A and so on, or every second code as in some vector games), after the anti-piracy
+scheme Ned Batchelder heard about at General Computer: the game checks the screen for its copyright notice and,
+if it's gone, shows "KICK ME FOR A FREE GAME" and pays a credit each time the cabinet's slam switch trips.
+Hits are listed as `KICK_TEXT`; FREE PLAY is listed separately as `FREE_PLAY_TEXT`, since it's normal DIP-switch
+text. Read the bytes around any hit: a FREE GAME message is often just an extra-game award. `--no-text` skips it.
+
+To test the other half of that trick on an 8080 set (does any input other than the coin give credits?), run
+`python3 trapscan.py kick set.zip`. It boots the game in the emulator, pulses every input bit in turn, slam and
+tilt included, and reports any that raises the credit count. A second coin chute shows up here too.
+`--patch ADDR=VAL` simulates a bootleg first (e.g. change one letter of the copyright text). A trap that only
+arms after a number of paid plays won't fire in this test; its credit write still shows in the writer audit.
+
 ## Merged ROM sets and clones
 
 Merged MAME sets keep each clone's differing ROMs in a sub-folder of the parent zip (e.g. `lrescue.zip` →

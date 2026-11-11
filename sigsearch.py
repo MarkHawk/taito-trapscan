@@ -14,6 +14,11 @@ Merged sets keep only a clone's changed files, so a clone that inherits the trap
 is listed under the parent only. Known COMBO_76_ANY values: D6 72 / FE 34 (Space Invaders "TAITO COP"
 egg), D6 52 (Part II "TAITO CORP" egg), FE 54 (Lunar Rescue trap), FE 36 / FE 56 (Part II traps 1 / 2).
 Anything else is new and worth reading.
+
+KICK_TEXT: the "kick me for a free game" test - KICK / KICK ME / FREE GAME / FREE CREDIT wording in any
+letter encoding (ASCII, A=$00, A=$0A, every-second-code ...), any CPU. FREE PLAY is reported separately as
+FREE_PLAY_TEXT because it's ordinary DIP-switch text. Short words like KICK can turn up by chance in big
+ROMs, so read the bytes around a hit. Turn it off with --no-text.
 """
 import argparse
 import csv
@@ -21,6 +26,9 @@ import os
 import re
 import sys
 import zipfile
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from trapscan.kickme import best_text_hits, NORMAL   # noqa: E402
 
 # (name, regex over bytes, what it is). Exact = byte-for-byte from the ROMs; loose = same instruction
 # shape with any addresses/values, to catch relocated or edited copies.
@@ -51,7 +59,16 @@ SIGS = [
 SIGS = [(n, re.compile(p, re.S), d) for n, p, d in SIGS]
 
 
+TEXT_SIGS = [('KICK_TEXT', 'kick-me / free-game wording in any letter encoding (the "kick me for a free game" test)'),
+             ('FREE_PLAY_TEXT', 'FREE PLAY wording (usually ordinary DIP-switch text)')]
+TEXT = [True]
+
+
 def scan_bytes(data):
+    if TEXT[0]:
+        for off, ph, base, step in best_text_hits(data):
+            name = 'FREE_PLAY_TEXT' if ph.replace(' ', '?') in NORMAL else 'KICK_TEXT'
+            yield name, off, f'"{ph}" (A=${base:02X}, step {step}) ' + data[off:off + len(ph)].hex(' ').upper()
     for name, rx, _ in SIGS:
         for m in rx.finditer(data):
             if name == 'COMBO_76_ANY' and bin(m.group(0)[-1]).count('1') < 2:
@@ -65,7 +82,9 @@ def main():
     ap.add_argument('-o', '--out', default='sigsearch.csv')
     ap.add_argument('--max-zip-mb', type=float, default=4.0,
                     help='skip zips larger than this (8-bit-era sets are tiny; default 4 MB)')
+    ap.add_argument('--no-text', action='store_true', help='skip the kick-me / free-game text search')
     args = ap.parse_args()
+    TEXT[0] = not args.no_text
 
     rows, zips, skipped, errors = [], 0, 0, 0
     for root, _, names in os.walk(args.folder):
@@ -99,7 +118,7 @@ def main():
         w.writerows(rows)
 
     print(f'\nScanned {zips} zips ({skipped} larger than {args.max_zip_mb} MB skipped, {errors} unreadable).')
-    for name, _, desc in SIGS:
+    for name, _, desc in SIGS + [(n, None, d) for n, d in TEXT_SIGS]:
         sets = sorted({(r[0] + ('/' + r[1].split('/')[0] if '/' in r[1] else '')) for r in rows if r[3] == name})
         print(f'\n{name} - {desc}\n  {len(sets)} set(s): ' + (', '.join(s.replace(".zip", "") for s in sets) if sets else 'none'))
     print(f'\nAll hits written to {args.out}')
