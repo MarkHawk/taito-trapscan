@@ -50,7 +50,7 @@ Legend: ★ = top priority.
 | Set | Title | Notes |
 |---|---|---|
 | `lrescue` | Lunar Rescue | already scanned: **3-credit trap** |
-| `grescue` ★ | Galaxy Rescue | "Taito (Universal licence?)": copyright text likely changed, so it may be **live as shipped** |
+| `grescue` ★ | Galaxy Rescue | "Taito (Universal licence?)": tested – Taito copyright intact, trap switched off |
 
 ### Other Taito 8080 games, 1979–80 ★
 

@@ -1,7 +1,8 @@
 # Hidden text finds (`textscan.py` over 1975–85 MAME sets)
 
-`textscan.py` decoded the text in 3,052 sets (MAME 0.277, every 1975–85 arcade set in the collection) and
-flagged anything with anti-piracy wording, named credits, or personal or rude words. Each find below was
+`textscan.py` went through every 1975–85 set in a MAME 0.277 collection (2,497 zips, 5,099 sets with clones;
+the year filter takes MAME's list, so a few home computers of the period are in too), found the letter codes
+in 3,052 of them, decoded their text and flagged anything with anti-piracy wording, named credits, or personal or rude words. Each find below was
 checked against [The Cutting Room Floor](https://tcrf.net) (TCRF), arcade-history.com and MAME's source
 before being called new. "Not found" means not found in those sources, not proof that nobody has seen it.
 
@@ -57,8 +58,8 @@ which run.
 | `akkaarrh` | "JOHN SALWITZ, DEC 9,1982, FOR ATARI, A WARNER COMPANY / GOOD LUCK, YOU PIRATES" (unused) | [TCRF: Akka Arrh](https://new.tcrf.net/Akka_Arrh) |
 | `digger` | "WRITTEN BY DAVID L. EVANS, 4535 TAFT AVENUE, LA MESA, CALIF. ... JUNE 25, 1980 GREMLIN/SEGA INC." | [TCRF: Digger](https://tcrf.net/Digger_(Arcade)) |
 | `sdungeon` | "STOLEN FROM THE GOOD BUDDY'S AT TAITO BY AN UNAUTHORIZED DO BADDER" | [TCRF: Space Dungeon](https://new.tcrf.net/Space_Dungeon) |
-| `combat`, `cracksht`, `cheyenne` | Exidy's hidden lines after the hardware-error screen ("HELLO, BENNY!", "GREETINGS!... PROFESSOR FALKEN") | TCRF's [Combat](https://tcrf.net/Combat_(Arcade)), [Crackshot](https://tcrf.net/Crackshot) and [Cheyenne](https://new.tcrf.net/Cheyenne) pages cover these hidden messages |
-| `gng`, `sectionz` | "THIS PROGRAME IS PROGRAMED BY TOSHIO ARIMA, IF YOU NEED SAME INFORMETION THEN FONE ..." | widely known (Capcom) |
+| `combat`, `cracksht`, `cheyenne` | Exidy's text after the hardware-error screen ("HELLO, BENNY!", "HELLO, BENY!", "GREETINGS!... PROFESSOR FALKEN") | partly: TCRF's [Combat](https://tcrf.net/Combat_(Arcade)), [Crackshot](https://tcrf.net/Crackshot) and [Cheyenne](https://new.tcrf.net/Cheyenne) pages describe hidden messages there and mention "Ben(n)y", but don't quote these lines |
+| `gng`, `sectionz` | "THIS PROGRAME IS PROGRAMED BY TOSHIO ARIMA, IF YOU NEED SAME INFORMETION THEN FONE ..." | [TCRF: Ghosts'n Goblins](https://tcrf.net/Ghosts'n_Goblins_(Arcade)) |
 
 ## False reads
 

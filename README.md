@@ -81,7 +81,7 @@ egg: it now spells "TAITO CORP", and its first step no longer needs Left and Rig
 
 ## It worked on real bootlegs
 
-Scanning a full MAME 0.277 collection (149 sets) and running each Lunar Rescue copy in the emulator:
+Scanning the 149 Taito-family sets in a MAME 0.277 collection and running each Lunar Rescue copy in the emulator:
 
 | Set | Made by | Trap as shipped |
 |---|---|---|
@@ -96,6 +96,8 @@ Three pirate copies pay out free games. Two others don't: Rescate Lunar patches 
 the other Moon Lander set ignores the controls while the game is idle, which blocks it. The two Moon Lander sets
 differ by exactly that: 25 bytes, every one of them part of the idle check. So one version of the
 UK bootleg gave free games and the other didn't (which came first, and whether the fix was deliberate, isn't known).
+A later byte-signature search of every 1975–85 set in that collection (2,497 zips, clones included) and in a
+MAME 0.78 collection found the trap code in these two families and nowhere else.
 All six Space Invaders Part II sets carry their trap too; Midway's *Space Invaders Deluxe* even updated one check to
 match its own changes.
 
@@ -205,7 +207,7 @@ Full instructions: [docs/USAGE.md](docs/USAGE.md). Sets worth collecting: [docs/
 
 Other anti-copying tricks from the same era that are documented:
 
-- **Atari Centipede (1980)** hid a data pattern that spells "COPYRIGHT 1980 ATARI" in Morse code once decoded.
+- **Atari's Centipede (1981)** hid a data pattern that spells "COPYRIGHT 1980 ATARI" in Morse code once decoded.
   It does nothing at run time; Atari used it as evidence in court that the bootleg *Magic Worm* was copied
   from its code ([Arcade Blogger](https://arcadeblogger.com/2019/06/29/atari-centipedes-hidden-code-trap/)).
 - **Donkey Kong (1981)** checks part of "NINTENDO" in its copyright line and freezes if it has been changed
@@ -218,8 +220,8 @@ Other anti-copying tricks from the same era that are documented:
   notice and, if missing, showed "KICK ME FOR A FREE GAME" and paid a credit for each kick
   ([Ned Batchelder](https://nedbatchelder.com/blog/200404/arcade_copy_protection), told second-hand).
 
-What's different here: the Lunar Rescue and Part II traps run, they're tied to a copy check, and on real
-bootlegs (Destination Earth, Escape from Mars, one version of Moon Lander) they pay out.
+What's different here: the Lunar Rescue and Part II traps actually run, they're tied to a copy check, and the
+Lunar Rescue one pays out on real bootlegs (Destination Earth, Escape from Mars, one version of Moon Lander).
 
 ## References
 
