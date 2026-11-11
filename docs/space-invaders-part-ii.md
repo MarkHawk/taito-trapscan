@@ -32,6 +32,12 @@ On a board where one of them reads high (one ground link missing or wired differ
 both high (both links missing: unconnected TTL inputs usually read high), the game resets. Whether Taito's ground
 links were hidden or ordinary tracks is unknown – a question for owners of real boards.
 
+Prior knowledge: the reset was identified in 2022 on the Arcade Museum forum (thread "Taito 3 board space invaders
+part 2 bad shifter causes resets?"), described as a guard against swapping Part II ROMs into a Space Invaders board,
+with the fix "NOP out the jp nz,$0000" (it's `JZ $0000` at $45A2 here). The lines are input 0 (pin 10) of the
+74LS153s at 6A/6B on the sound board; one owner's Moon Base Zeta board has them wired straight to pin 8 (GND).
+The thread doesn't mention the one-line-high case that arms the credit trap.
+
 **Emulator result:** with port 0 = $02 and the combo held during attract → credits 2, game starts.
 Genuine port values → nothing.
 
