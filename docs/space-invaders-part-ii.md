@@ -13,17 +13,37 @@ Bits used below (port 1): b1 Start2, b2 Start1, b4 Fire, b5 Left, b6 Right.
 
 ## Trap 1 – works: Start1 + Start2 + Fire + Left, attract mode ($418F)
 ```
-4186  mvi h,$1F / mvi l,$E4 / inr h / dcr l   ; HL = $20E3 (arming flag)
-418C  mov a,m / ana a / rz
-418F  call $1F49 / ani $76 / cpi $36          ; Start1+Start2+Fire+Left, Right released
-4197  HL -> $20EB : mvi m,$02                  ; credits = 2
-419F  mvi l,$CC   : mvi m,$02                  ; shadow = 2
+4186  mvi  h,$1F
+4188  mvi  l,$E4
+418A  inr  h
+418B  dcr  l           ; HL = $20E3 (arming flag)
+418C  mov  a,m
+418D  ana  a
+418E  rz
+418F  call $1F49       ; read player 1 controls
+4192  ani  $76
+4194  cpi  $36         ; Start1+Start2+Fire+Left, Right released
+4196  rnz
+4197  mvi  l,$EC
+4199  dcr  l
+419A  mvi  h,$1F
+419C  inr  h           ; HL = $20EB
+419D  mvi  m,$02       ; credits = 2
+419F  mvi  l,$CC
+41A1  mvi  m,$02       ; shadow = 2
 ```
 **Arming flag $20E3:** set to 1 at power-up. At $459C (called from $1F53 in attract):
 ```
-in 0 / ani $0A / cpi $0A / jz $0000   ; port 0 bits 1 AND 3 high -> reset the machine
-ana a / rnz                           ; exactly one high -> stay armed
-mvi $20E3,0                           ; both low -> disarm
+459C  in   0
+459E  ani  $0A
+45A0  cpi  $0A
+45A2  jz   $0000       ; port 0 bits 1 AND 3 high -> reset the machine
+45A5  ana  a
+45A6  nop
+45A7  rnz              ; exactly one high -> stay armed
+45A8  lxi  h,$20E3
+45AB  mvi  m,$00       ; both low -> clear $20E3: disarm
+45AD  ret
 ```
 MAME's driver notes (from Taito's schematic) say port 0 bits 1 and 3 are **tied low** on Taito's board, while
 bits 2, 4, 5 and 7 are pulled high through 1k resistors. MAME reads them as 0, so the trap disarms at frame 18

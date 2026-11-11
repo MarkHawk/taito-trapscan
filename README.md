@@ -59,7 +59,45 @@ machine.
 
 ## Space Invaders Part II
 
-Part II hides the same idea more carefully:
+Part II's trap is also in the extra ROM at `$4000`:
+
+```
+4186  mvi  h,$1F
+4188  mvi  l,$E4
+418A  inr  h
+418B  dcr  l           ; HL = $20E3, the "armed" flag, built in pieces
+418C  mov  a,m
+418D  ana  a
+418E  rz               ; not armed -> do nothing
+418F  call $1F49       ; read player 1 controls
+4192  ani  $76         ; keep Start1, Start2, Fire, Left, Right
+4194  cpi  $36         ; = Start1 + Start2 + Fire + Left, nothing else
+4196  rnz
+4197  mvi  l,$EC
+4199  dcr  l
+419A  mvi  h,$1F
+419C  inr  h           ; HL = $20EB, the credit counter
+419D  mvi  m,$02       ; credits = 2
+419F  mvi  l,$CC
+41A1  mvi  m,$02       ; shadow copy = 2 as well (see below)
+```
+
+And this is what arms it, run over and over in attract mode:
+
+```
+459C  in   0           ; read input port 0
+459E  ani  $0A         ; keep bits 1 and 3, the two lines Taito ties to ground
+45A0  cpi  $0A
+45A2  jz   $0000       ; both high -> reset the machine
+45A5  ana  a
+45A6  nop
+45A7  rnz              ; exactly one high -> stay armed
+45A8  lxi  h,$20E3     ; both low (Taito's wiring):
+45AB  mvi  m,$00       ;   clear the flag, trap disarmed
+45AD  ret
+```
+
+Part II hides the same idea more carefully than Lunar Rescue:
 
 - **The credit address never appears in the code.** It's built at run time from neighbouring values
   (`MVI H,$1F / INR H` and `MVI L,$EC / DCR L` gives `$20EB`), so searching the ROM for `$20EB`
