@@ -3,8 +3,7 @@
 *For Phil.*
 
 In the 1980s, Bexley Squash Club had a bootleg arcade machine, and I remember someone there who could
-get free games out of it with a button trick. I'd always half-assumed that was playground legend.
-Forty-odd years later I went looking for it in the code.
+get free games out of it with a button trick. Forty-odd years later I went looking for it in the code.
 
 It's real. Two Taito games from 1979, **Lunar Rescue** and **Space Invaders Part II**, contain hidden
 routines that hand out free credits when you hold a secret button combination in attract mode, and
@@ -23,7 +22,6 @@ As far as I can find, none of this has been documented before.
 | **Space Invaders Part II** (1979) | P1 Start + P2 Start + Fire + Left | 2 credits | one of two unused input lines on the board reads high (i.e. it isn't running on the expected hardware) |
 | Space Invaders Part II, second trap | P1 Start + P2 Start + Fire + Right | nothing (bug) | the game's own ROM has been patched |
 | Space Invaders (1978, Midway set) | none | – | no trap, just the known "TAITO COP" easter egg |
-| Atari Lunar Lander (1979) | none | – | clean; checked as a control |
 
 Combos must be exact: the other buttons have to be released, or nothing happens.
 
