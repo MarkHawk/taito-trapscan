@@ -57,6 +57,40 @@ tilt included, and reports any that raises the credit count. A second coin chute
 `--patch ADDR=VAL` simulates a bootleg first (e.g. change one letter of the copyright text). A trap that only
 arms after a number of paid plays won't fire in this test; its credit write still shows in the writer audit.
 
+## Hidden text in any game: credits, anti-piracy and developer messages
+
+```bash
+python3 textscan.py ~/roms/mame277 -o textscan
+```
+
+Works on any manufacturer and CPU. For each set it finds the game's own letter codes from words every game
+shows (SCORE, CREDIT, PLAYER, INSERT COIN...), decodes all the text in its ROMs, and:
+
+- prints flagged lines live as it goes: **credits** (PROGRAM, DESIGN, BY...), **anti-piracy** (COPY, PIRATE,
+  ILLEGAL, STOLEN...), **dev** (TEST, SECRET, HELLO, LOVE, KICK...);
+- writes `textscan/report.md` (flagged text by set, the interesting ones first; copyright years after);
+- writes `textscan/text/<set>.txt`, every readable string in the set with file and offset, to skim by eye.
+
+On the 36-zip test collection it turned up "BY JOEL KREGER FOR MIDWAY" in Space Invaders II, "B I LOVE YOU" in
+Jungle King and "DARLING I LOVE YOU" in a Lupin III set. A string being in the ROM doesn't mean it's shown on
+screen; check anything new against [The Cutting Room Floor](https://tcrf.net) before calling it undiscovered.
+
+## What each clone and bootleg changed
+
+```bash
+python3 clonediff.py ~/roms/mame277 -o clonediff.md
+```
+
+For every clone, lists the ROMs it changed from its parent: each changed run of bytes (offset, old → new) and,
+where the bytes are text, the old and new text decoded ("TAITO CORPORATION" → "TAITO DO BRASIL",
+"GALAXY WARS" → "STAR WARS"). Identical ROMs are counted, not listed; ROMs under 50% identical are marked
+new/rewritten. A handful of changed bytes in an otherwise identical ROM is the interesting case: that's how
+the Moon Lander idle-controls patch and the bootleggers' protection fixes show up.
+
+Merged sets (clone folders inside the parent's zip, MAME's default) are compared with the true parent.
+For one-zip-per-set collections it compares each set with its closest relative (most identical ROMs), which
+can be a sibling clone rather than the parent.
+
 ## Merged ROM sets and clones
 
 Merged MAME sets keep each clone's differing ROMs in a sub-folder of the parent zip (e.g. `lrescue.zip` →

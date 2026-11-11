@@ -156,6 +156,10 @@ In MAME's debugger:
   the moment the trap reads it: `bpset 418c,1,{b@20e3=1;g}`. Reset, and hold P1 Start + P2 Start + Fire + Left
   from power-on; the trap runs about 4 seconds in, and the credits go to 2.
 
+Other collection-wide searches (any manufacturer): `sigsearch.py` (trap code and "kick me" wording),
+`textscan.py` (all hidden text, credits and anti-piracy messages flagged) and `clonediff.py` (exactly what each
+clone or bootleg changed). See [docs/USAGE.md](docs/USAGE.md).
+
 Scan a whole folder of sets into one report (suspicious sets listed first):
 
 ```bash

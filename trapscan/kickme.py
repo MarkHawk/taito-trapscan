@@ -31,6 +31,10 @@ import operator
 import re
 
 
+import functools
+
+
+@functools.lru_cache(maxsize=None)
 def _pattern(ph, step):
     """Regex over the byte-difference string: letter-to-letter steps fixed, steps next to a gap free."""
     out = b''
