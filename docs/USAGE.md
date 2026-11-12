@@ -150,7 +150,7 @@ the board check clears the flag again and again in attract mode, so set it as th
 ## Screenshots
 
 ```bash
-python3 scripts/trapdemo.py [ROM_FOLDER]       # needs Pillow; default folder ~/roms/scope277, writes docs/img/
+python3 scripts/trapdemo.py ROM_FOLDER         # needs Pillow; ROM_FOLDER is required; writes docs/img/
 ```
 
 Runs the five cases shown in the README (genuine and bootleg Lunar Rescue, Moon Lander set 2, Part II with
@@ -162,7 +162,7 @@ if one is not what the README says.
 ## Sanity check
 
 ```bash
-python3 scripts/verify.py [ROM_FOLDER]         # about 2 minutes; default folder ~/roms/scope277
+python3 scripts/verify.py ROM_FOLDER           # about 2 minutes; ROM_FOLDER is required
 ```
 
 Checks the code listings and emulator results in the README and `docs/` against your ROMs: the trap and

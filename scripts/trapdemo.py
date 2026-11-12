@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Screenshots of the credit traps firing (or not) in attract mode, from trapscan's own emulator.
 
-  python3 scripts/trapdemo.py [ROM_FOLDER] [--out DIR] [--only NAME]     # folder default ~/roms/scope277, DIR default docs/img
+  python3 scripts/trapdemo.py ROM_FOLDER [--out DIR] [--only NAME]     # ROM_FOLDER required; DIR default docs/img
 
 For each case it runs the set, holds the combination in the attract demo, watches the credit counter ($20EB) and
 lets go as soon as it first changes (a held Start 1 would begin a game and spend a credit), then saves a screenshot
@@ -109,7 +109,7 @@ def shoot(folder, zipname, clone, port0, combo, upto, release, shot, path):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument('folder', nargs='?', default='~/roms/scope277', help='MAME ROM folder (default ~/roms/scope277)')
+    ap.add_argument('folder', help='MAME ROM folder (required)')
     ap.add_argument('--out', default=os.path.join(HERE, '..', 'docs', 'img'), help='output folder (default docs/img)')
     ap.add_argument('--only', help='one case name, e.g. lrescue-mlandera')
     args = ap.parse_args()

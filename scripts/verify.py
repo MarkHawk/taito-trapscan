@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """verify.py - check that the code listings and emulator results in README.md and docs/ match the real ROMs.
 
-  python3 scripts/verify.py [ROM_FOLDER]        # default ~/roms/scope277
+  python3 scripts/verify.py ROM_FOLDER        # ROM_FOLDER: your MAME ROM folder (required)
 
 Prints one PASS/FAIL line per check and exits non-zero if any fail. A set that cannot be found counts as a FAIL.
 Uses trapscan's loader (romload.expand, so clones inside merged zips work) and emulator (emu8080.Board),
@@ -198,7 +198,9 @@ def invadpt2_checks():
 
 
 def main():
-    folder = os.path.expanduser(sys.argv[1] if len(sys.argv) > 1 else '~/roms/scope277')
+    if len(sys.argv) != 2:
+        raise SystemExit('usage: python3 scripts/verify.py ROM_FOLDER')
+    folder = os.path.expanduser(sys.argv[1])
     if not os.path.isdir(folder):
         raise SystemExit(f'ROM folder not found: {folder}')
     index_sets(folder, ['lrescue', 'invadpt2'] + LRESCUE_CLONES + INVADPT2_CLONES)
