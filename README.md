@@ -219,7 +219,8 @@ Taito's 68705 protection chip: by 1983 the protection lived in hardware.
 
 ## How it was found
 
-1. Disassembled the program ROMs: 6502 for Lunar Lander, Intel 8080 for the Taito games.
+1. Disassembled the program ROMs: 6502 for Lunar Lander, Intel 8080 for the Taito games. (Atari's Lunar Lander was
+   checked first as a control, an unrelated 1979 game on a 6502, and is clean: see [docs/lunar-lander-clean.md](docs/lunar-lander-clean.md).)
 2. Found the credit counter by inserting coins in the emulator, then traced **every** instruction that writes it.
    Anything other than "coin in" and "start pressed" is suspicious.
 3. Ran the ROMs in a purpose-built 8080 emulator of the Space Invaders board, held the combos, and
