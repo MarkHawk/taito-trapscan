@@ -1,9 +1,8 @@
 # Taito's hidden free credits: anti-bootleg traps in 1979 arcade code
 
-*For Phil.*
-
-In the 1980s, Bexley Squash Club had a bootleg arcade machine, and I remember someone there who could
-get free games out of it with a button trick. Forty-odd years later I went looking for it in the code.
+In the 1980s my friend Phil S and I used to play at Bexley Squash Club on Sunday afternoons. The club had an
+arcade machine, and someone there could get free games out of it with a button trick. Forty-odd years later I went
+looking for it in the code.
 
 It's real. Two Taito games from 1979, **Lunar Rescue** and **Space Invaders Part II**, contain hidden
 routines that hand out free credits when you hold a secret button combination in attract mode, and
@@ -198,9 +197,13 @@ Details: [docs/easter-egg-travelled.md](docs/easter-egg-travelled.md).
 
 ## So what was going on at the squash club?
 
+The machine was an unmarked cocktail table: no maker's name, a very generic cabinet. Around the same time the club
+also had unmarked Asteroids and Space Firebird machines, two on site at once, which sounds like an operator buying
+copied boards.
+
 If the machine was a Lunar Rescue copy with the Taito name changed (*Destination Earth* or *Escape from
 Mars*, or the right version of *Moon Lander*, which was a UK bootleg), holding the combo during the attract demo gave free credits, exactly as described above. I can't
-know which board it was, but the memory fits the code, and those copies were real.
+know which board it was, but the memory fits the code, and those copies were real. A cocktail table makes no difference: the trap reads the player 1 controls whatever the cabinet type.
 
 ## Was this Taito policy?
 
