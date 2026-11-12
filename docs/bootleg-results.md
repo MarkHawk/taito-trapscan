@@ -1,4 +1,4 @@
-# Results across a full MAME 0.277 collection (149 sets)
+# Results across 149 Taito-family sets in a MAME 0.277 collection
 
 Scanned with `batch.py` (merged zips expanded; clone ROMs placed by matching the parent's code).
 
