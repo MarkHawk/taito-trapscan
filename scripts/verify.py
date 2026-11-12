@@ -25,7 +25,7 @@ IP_B_ADDR = 0x459C
 RESCLUNAR = bytearray(LR); RESCLUNAR[0x47E6 - LR_ADDR] = 0xC9
 RESCLUNAR = bytes(RESCLUNAR)
 
-LRESCUE_CLONES = ['desterth', 'escmars', 'mlander', 'grescue', 'lrescueabl', 'lrescuem', 'lrescuem2', 'resclunar']
+LRESCUE_CLONES = ['desterth', 'escmars', 'mlander', 'mlandera', 'grescue', 'lrescueabl', 'lrescuem', 'lrescuem2', 'resclunar']
 INVADPT2_CLONES = ['invadpt2a', 'invadpt2br', 'invaddlx', 'moonbase', 'moonbasea']
 
 fails = 0
@@ -42,7 +42,8 @@ def report(ok, text):
 
 def find_zips(folder):
     """Every zip in the folder that could hold the sets we need."""
-    return [os.path.join(folder, z) for z in ('lrescue.zip', 'invadpt2.zip') if os.path.exists(os.path.join(folder, z))]
+    # mlandera is a full set in its own zip (made from the .7z); it is placed by self-location, like any unknown parent
+    return [os.path.join(folder, z) for z in ('lrescue.zip', 'invadpt2.zip', 'mlandera.zip') if os.path.exists(os.path.join(folder, z))]
 
 
 def index_sets(folder, wanted):
@@ -93,7 +94,7 @@ def run(b, frames, holds=(), watch=(), brk=(), idle=0x08):
 def need(name, what):
     """True if the set is loaded; otherwise record a FAIL for this check."""
     if get(name) is None:
-        report(False, f'{what}: set "{name}" not found under the ROM folder (checked its own zip and clone folders in lrescue.zip, invadpt2.zip)')
+        report(False, f'{what}: set "{name}" not found under the ROM folder (checked lrescue.zip, invadpt2.zip and mlandera.zip)')
         return False
     return True
 
@@ -129,6 +130,25 @@ def byte_checks():
 
 
 # ---------------------------------------------------------------- emulator checks
+# README: the Moon Lander sets differ by 25 bytes, all in set 1's idle-controls check
+IDLE_REGIONS = [(0x0662, 0x0666), (0x0A48, 0x0A4A), (0x0D2C, 0x0D33), (0x425B, 0x425F), (0x46B5, 0x46BA)]
+
+
+def moonlander_diff_check():
+    if not (need('mlander', 'mlander/mlandera diff') and need('mlandera', 'mlander/mlandera diff')):
+        return
+    a, b = get('mlander'), get('mlandera')
+    d = [i for i in range(len(a)) if a[i] != b[i]]
+    outside = [i for i in d if not any(lo <= i <= hi for lo, hi in IDLE_REGIONS)]
+    spans = []
+    for i in d:
+        if spans and i == spans[-1][1] + 1: spans[-1][1] = i
+        else: spans.append([i, i])
+    report(len(d) == 25 and not outside,
+           f'mlander vs mlandera differ by {len(d)} bytes (README: 25), {len(outside)} outside the idle-controls check; at '
+           + ', '.join(f'${x:04X}' if x == y else f'${x:04X}-${y:04X}' for x, y in spans))
+
+
 def lrescue_checks():
     if need('lrescue', 'lrescue emulator checks'):
         # flag $20ED (the copyright check result): nonzero at boot, cleared by about frame 156
@@ -143,7 +163,7 @@ def lrescue_checks():
         mx = max(c[0] for _, c in ch)
         report(hits[0x47E9] > 0 and 3 in [c[0] for _, c in ch],
                f'lrescue --patch 4676=13: $47E9 hit {hits[0x47E9]} times (first frame {first.get(0x47E9)}), credits seen {[f"{c[0]:02X}" for _, c in ch]}')
-    for n in ('desterth', 'escmars'):
+    for n in ('desterth', 'escmars', 'mlandera'):
         if need(n, f'{n} combo'):
             ch, first, hits = run(board_for(n), 2500, [('start1+fire+right', 1000, 2500)], (0x20EB,), (0x47E9,))
             report(hits[0x47E9] > 0 and 3 in [c[0] for _, c in ch],
@@ -185,6 +205,7 @@ def main():
     for n, z in sorted(where.items()):
         print(f'      {n}: {os.path.basename(z)}')
     byte_checks()
+    moonlander_diff_check()
     lrescue_checks()
     invadpt2_checks()
     print(f'\n{fails} check(s) failed' if fails else '\nall checks passed')
