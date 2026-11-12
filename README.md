@@ -312,3 +312,5 @@ Lunar Rescue one pays out on real bootlegs (Destination Earth, Escape from Mars,
   board check
 
 *Mark Hawkings, Bexley, 2026.*
+
+Licence: MIT
