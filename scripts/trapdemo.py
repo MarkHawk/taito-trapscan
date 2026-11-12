@@ -36,6 +36,10 @@ CASES = [
     ('invadpt2-genuine', 'invadpt2.zip', None, 0x00, IP_COMBO, 0, 'invadpt2-one-line-high', 1500),
 ]
 
+# "Nothing happens" cases whose shot must be later than the armed case's, so the attract screen has finished drawing
+# (invadpt2 is still printing its copyright line, "*TAITO COR", at the armed case's frame)
+LATE_SHOT = {'invadpt2-genuine': 600}
+
 
 def hold_mask(spec):
     v = 0
@@ -63,16 +67,17 @@ def play(folder, zipname, clone, port0, combo, upto, release_at=None):
         yield f, b
 
 
-def find_shot(folder, zipname, clone, port0, combo, upto, like=None):
+def find_shot(name, folder, zipname, clone, port0, combo, upto, like=None):
     """Return (change frame, shot frame, release frame) for a case.
 
     Armed case: hold the combo until the credit counter ($20EB) first changes, then let go (a held Start 1 would
     begin a game and spend a credit). The shot is the first frame after that where the CREDIT line has settled to
     its final value and the screen has stopped changing, ie the game has redrawn it.
-    "Nothing happens" case (`like` = the armed case's (change, shot, release)): the same frame of the demo, or the
-    first frame after it that shows a CREDIT line at all."""
+    "Nothing happens" case (`like` = the armed case's (change, shot, release)): the same frame of the demo (or the
+    frame in LATE_SHOT if later), or the first frame after it that shows a CREDIT line at all."""
     if like is not None:
         change, shot, release = like
+        shot = max(shot, LATE_SHOT.get(name, 0))
         for f, b in play(folder, zipname, clone, port0, combo, upto, release):
             if f >= shot and any(strip(b.cpu.m)):
                 return None, f, release
@@ -113,7 +118,7 @@ def main():
     found, bad = {}, 0
     for name, zipname, clone, port0, combo, want, like, upto in CASES:
         try:
-            change, shot, release = find_shot(folder, zipname, clone, port0, combo, upto, found.get(like))
+            change, shot, release = find_shot(name, folder, zipname, clone, port0, combo, upto, found.get(like))
             if shot is None:
                 print(f'BAD {name}: no suitable frame found'); bad += 1; continue
             found[name] = (change, shot, release)

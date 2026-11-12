@@ -148,7 +148,7 @@ Part II hides the same idea more carefully than Lunar Rescue:
 |---|---|
 | ![Part II, port 0 = 00: CREDIT 0](docs/img/invadpt2-genuine.png) | ![Part II, port 0 = 02: CREDIT 2](docs/img/invadpt2-one-line-high.png) |
 
-*`invadpt2`, P1 Start + P2 Start + Fire + Left held in the attract demo and then released: nothing with Taito's wiring, 2 credits with one of the two lines high. The left shot is a later point in the demo (the first screen with a CREDIT line at 0). Screenshots from this repo's emulator (`scripts/trapdemo.py`).*
+*`invadpt2`, P1 Start + P2 Start + Fire + Left held in the attract demo and then released: nothing with Taito's wiring, 2 credits with one of the two lines high. The left shot is a later point in the demo (frame 600, once the copyright line is fully drawn). Screenshots from this repo's emulator (`scripts/trapdemo.py`).*
 
 The add-on ROM also contains a cleaned-up version of the known Space Invaders "TAITO COP" easter
 egg: it now spells "TAITO CORP", and its first step no longer needs Left and Right held at once.
