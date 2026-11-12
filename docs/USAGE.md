@@ -6,7 +6,8 @@ arcade ROMs: Taito, Midway and their bootlegs, 1978–81.
 They came out of reverse-engineering two 1979 Taito games, where both turned out to contain
 anti-bootleg traps that hand out credits on a secret button combination: see the main README.
 
-Pure Python 3 (3.8+). No dependencies, except Pillow if you want screenshots (`pip install pillow`).
+Pure Python 3 (3.8+). No dependencies for the 8080 games, except Pillow if you want screenshots (`pip install pillow`).
+Z80 mode needs `z80dis` (see below), so "no dependencies" is not quite true.
 
 ## Quick start
 
@@ -74,7 +75,7 @@ Unknown parents are laid out by **self-location**: each ROM's own jump/call targ
 
 Sets with 4 KB/8 KB ROMs are detected automatically. Main-CPU ROMs are separated from sound and graphics ROMs,
 banked ROMs at $6000–$7FFF are scanned as bank 0 and bank 1, and inputs are read from $D400–$D40F. Disassembly
-needs `py -m pip install z80dis`. There's no Z80 emulator, so `run` is 8080-only.
+needs `z80dis` (`python3 -m pip install z80dis`). There's no Z80 emulator, so `run` is 8080-only.
 
 ## Boot check
 

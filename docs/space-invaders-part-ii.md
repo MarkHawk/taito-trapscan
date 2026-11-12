@@ -11,7 +11,7 @@ Bits used below (port 1): b1 Start2, b2 Start1, b4 Fire, b5 Left, b6 Right.
 - Neither hidden routine has "$20EB" in its code: it's built at run time (`MVI L,$EA / INR L`,
   `MVI H,$1F / INR H / MVI L,$EC / DCR L`).
 
-## Trap 1 – works: Start1 + Start2 + Fire + Left, attract mode ($418F)
+## Trap 1 – works: Start1 + Start2 + Fire + Left, attract mode ($4186)
 ```
 4186  mvi  h,$1F
 4188  mvi  l,$E4

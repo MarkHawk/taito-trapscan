@@ -22,7 +22,7 @@ spotted the reset half of Part II's board check; see below.)
 | **Lunar Rescue** (1979) | P1 Start + Fire + Right | 3 credits | the "© TAITO CORPORATION" text on the title screen has been altered |
 | **Space Invaders Part II** (1979) | P1 Start + P2 Start + Fire + Left | 2 credits | one of two unused input lines on the board reads high (i.e. it isn't running on the expected hardware) |
 | Space Invaders Part II, second trap | P1 Start + P2 Start + Fire + Right | nothing (bug) | the game's own ROM has been patched |
-| Space Invaders (1978, Midway set) | none | – | no trap, just the known "TAITO COP" easter egg |
+| Space Invaders (1978; MAME's `invaders`, the Midway set) | none | – | no trap, just the known "TAITO COP" easter egg |
 
 Combos must be exact: the other buttons have to be released, or nothing happens.
 
@@ -36,8 +36,8 @@ there's one more place that writes it, tucked into the extra ROM at `$4000`:
 47DB  ani  $76         ; keep Start1, Start2, Fire, Left, Right
 47DD  cpi  $54         ; = Start1 + Fire + Right, nothing else
 47DF  rnz
-47E0  mvi  l,$ED      ; HL = $20ED, the "armed" flag - built in two
-47E2  mvi  h,$20      ;   halves, so "$20ED" never appears in the code
+47E0  mvi  l,$ED       ; HL = $20ED, the "armed" flag - built in two
+47E2  mvi  h,$20       ;   halves, so "$20ED" never appears in the code
 47E4  mov  a,m
 47E5  ana  a
 47E6  rz               ; not armed -> do nothing
@@ -136,7 +136,7 @@ Part II hides the same idea more carefully than Lunar Rescue:
   74LS153s at 6A and 6B on the sound board; on that owner's Moon Base Zeta board they're "wired directly to
   pin 8 GND" – a pin-to-pin link on the chip itself, easy to miss. (HudsonArcade's last post says they should
   be pulled *up* for Part II, which doesn't match the schematic notes, that board, or the code's "both high =
-  reset"; unresolved.) A [UKVAC thread](https://www.ukvac.com/forum/threads/taito-3-pcb-invaders-boardset-resetting.75648/)
+  reset"; unresolved.) The forum's "6A and 6B on the sound board" and the schematic's "chips 4 and 9" are probably two labelling schemes (board grid references against the schematic's position numbers) for the same two 74LS153s, but I haven't confirmed that against the schematic or board photos: unconfirmed. A [UKVAC thread](https://www.ukvac.com/forum/threads/taito-3-pcb-invaders-boardset-resetting.75648/)
   mentions the same "couple of grounds changed for an SI 2 board and a protection check". What I couldn't find
   anywhere is the other half: with exactly one line wrong, the check doesn't reset, it arms a free-credit routine.
 - **There's a second trap that doesn't work.** It's armed if five bytes of the program ROM have been
