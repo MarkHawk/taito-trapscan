@@ -147,6 +147,30 @@ power-on) do `b@20ed=1`, then hold P1 Start + Fire + Right once the demo is runn
 the board check clears the flag again and again in attract mode, so set it as the trap reads it:
 `bpset 418c,1,{b@20e3=1;g}`, reset, and hold P1 Start + P2 Start + Fire + Left from power-on.
 
+## Screenshots
+
+```bash
+python3 scripts/trapdemo.py [ROM_FOLDER]       # needs Pillow; default folder ~/roms/scope277, writes docs/img/
+```
+
+Runs the five cases shown in the README (genuine and bootleg Lunar Rescue, Moon Lander set 2, Part II with
+genuine and one-line-high port 0), holds the combination in the attract demo, lets go when the credit counter
+(`$20EB`) first changes, and saves the first frame where the screen shows the new CREDIT value. `--only NAME`
+saves one; `--out DIR` changes the folder. It prints the counter it found for each image and exits non-zero
+if one is not what the README says.
+
+## Sanity check
+
+```bash
+python3 scripts/verify.py [ROM_FOLDER]         # about 2 minutes; default folder ~/roms/scope277
+```
+
+Checks the code listings and emulator results in the README and `docs/` against your ROMs: the trap and
+board-check bytes in every Lunar Rescue and Part II set, the Moon Lander 25-byte difference, and the combo
+results (credits, `$47E9`, `$419D`, the port-0 reset, Moon Base's dead trap). One PASS/FAIL line each; exit
+status is non-zero if any fail, and a set it cannot find counts as a failure. It needs `lrescue.zip`,
+`invadpt2.zip` and `mlandera.zip` in the folder.
+
 ## Files
 
 ```
@@ -162,6 +186,8 @@ trapscan/skiplist.py   name prefixes for --skip-nonarcade
 batch.py               folder -> one Markdown report
 sigsearch.py           byte-search a whole collection for the trap code
 scripts/eggdemo.py     trigger TAITO COP / HOEI COP and save a screenshot
+scripts/trapdemo.py    screenshots of the credit traps firing (or not) in attract mode
+scripts/verify.py      check the README and docs against the real ROMs (about 2 minutes)
 docs/                  write-ups and this guide
 ```
 
