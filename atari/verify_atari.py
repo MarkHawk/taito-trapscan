@@ -92,10 +92,12 @@ def main():
         at(z, '136001-408.e1', 0x0A2, 'AD 0A 10 4D 0A 10 18 65 C8 85 C8 A9 03 8D 0F 10',
            'rev 4 $28A2: LDA $100A / EOR $100A / CLC / ADC $C8 / STA $C8 / LDA #3 / STA $100F')
         for name, off, rev in (('centiped1/136001-108.e1', 0x09F, 'rev 1'), ('centiped2/136001-208.e1', 0x09F, 'rev 2'),
-                               ('centipdd/136001-308.e1', 0x09E, 'dedicated-cabinet set')):
+                               ('centipdd/136001-308.e1', 0x09E, 'Centipede Dux (1989 hack)')):
             at(z, name, off, 'AD 0A 10 4D 0A 10 18 65 C8 85 C8', '%s has the same check' % rev)
         at(z, 'magworma/h42.1e', 0x09F, 'A5 E2 EA 45 E2 EA 18 65 C8 85 C8',
            'Magic Worm set 2: LDA $E2 / NOP / EOR $E2 / NOP (reads RAM twice: always 0)')
+        at(z, 'magworm/11005-1.k1', 0x09F, 'A9 07 8D 01 10 A9 31 8D 03 10 20 69 30 EA EA EA 20 1F 23',
+           'Magic Worm set 1: check removed (AY set-up writes, JSR $3069, NOPs, then JSR $231F)')
         at(z, 'caterplr/olympia.c29', 0x09F, 'AD 9F 28 4D 9F 28 18 65 C8 85 C8',
            'Caterpillar: LDA $289F / EOR $289F (reads ROM twice: always 0)')
         at(z, 'centipdb/e1', 0x09F, 'AD 0A 10 4D 0A 10 18 65 C8 85 C8', 'centipdb bootleg kept the check')

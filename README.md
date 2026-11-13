@@ -257,9 +257,10 @@ chip's random-number register. It then reads that register twice and adds the di
 
 This one is known: the commented disassembly at
 [6502disassembly.com](https://6502disassembly.com/va-centipede/Centipede_rev4.html) calls it "add credits if it's
-not a POKEY". What the MAME sets add is the bootleggers' side. **Magic Worm** (the bootleg Atari took to court) and
-**Caterpillar** both replaced the POKEY with a cheaper General Instrument sound chip, and both changed these two
-reads to read the same byte twice (Magic Worm a RAM byte, Caterpillar a ROM byte), so the difference is always 0.
+not a POKEY". What the MAME sets add is the bootleggers' side. Four Centipede bootlegs replace the POKEY with a cheaper General
+Instrument sound chip. **Caterpillar** and one set of **Magic Worm** (the bootleg Atari took to court) changed these
+two reads to read the same byte twice, so the difference is always 0; the other Magic Worm set removed the check;
+two more bootlegs left it alone.
 
 | Genuine POKEY | Random register not frozen |
 |---|---|
@@ -316,7 +317,7 @@ On the evidence so far, it was a tactic of 1979–80, when copied boards were ev
   Space Cruiser, Space Seeker, Alpine Ski, Wild Western, Jungle King, Front Line, Elevator Action (no trap). The
   Elevator Action bootleg had to patch nine places to run without Taito's 68705 protection chip: by 1983 the
   protection lived in hardware.
-- **Atari:** Centipede (every revision) and the first two revisions of Asteroids Deluxe pay out on copies; Asteroids
+- **Atari:** Centipede (revisions 1, 2 and 4, the ones checked) and the first two revisions of Asteroids Deluxe pay out on copies; Asteroids
   Deluxe revision 3 drops it. Atari's other tricks of the time were evidence and sabotage rather than payouts:
   Centipede's hidden Morse-code signature, used in court, and checksums such as Tempest's.
 

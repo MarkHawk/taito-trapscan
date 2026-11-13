@@ -27,20 +27,25 @@ On a genuine POKEY the two reads are identical and nothing is added. On a board 
 every time a game starts. MAME's POKEY emulation follows the real chip: in reset the generator is held, and reads
 return the same value.
 
-All of Atari's sets carry it: revision 4 at `$28A2`, revisions 1 and 2 and the dedicated-cabinet set a few bytes
-earlier.
+All of Atari's sets carry it: revision 4 at `$28A2`, revisions 1 and 2 three bytes earlier (and so does Centipede Dux,
+a 1989 hack).
 
 ## What the bootlegs did
 
-MAME's driver gives two Centipede bootlegs a General Instrument AY-3-8910/8912 sound chip instead of the POKEY, so
-the check had no POKEY to read. Both changed it to read the same thing twice, which always gives 0:
+Four Centipede bootlegs in MAME replace the POKEY with a cheaper General Instrument AY-3-8910/8912 sound chip. Two
+of them changed the check; two left it as Atari wrote it:
 
 | Set | Sound chip | Code at the check |
 |---|---|---|
 | `centiped` (Atari) | POKEY | `LDA $100A / EOR $100A` |
+| `magworm`, Magic Worm set 1 (Sidam bootleg) | AY-3-8912 | removed: the bytes now set up the AY chip (`LDA #$07 / STA $1001 / LDA #$31 / STA $1003`, then `JSR $3069 / NOP / NOP / NOP`) |
 | `magworma`, Magic Worm set 2 (bootleg) | AY-3-8912 | `LDA $E2 / NOP / EOR $E2 / NOP`: reads a RAM byte twice, always 0 |
 | `caterplr`, Caterpillar (Olympia bootleg) | AY-3-8910 | `LDA $289F / EOR $289F`: reads a ROM byte twice, always 0 |
-| `centipdb`, `millpac` (bootlegs) | POKEY | unchanged |
+| `centipdb`, `millpac` (Millpac: Valadon Automation) | AY-3-8910 | unchanged |
+
+Leaving it in can be harmless: if address `$100A` returns the same value twice on the bootleg board, Atari's code
+adds nothing. What `$100A` reads on each of these boards isn't known, so neither is why two makers changed the
+check and two didn't.
 
 Magic Worm is the bootleg that Atari took to court using Centipede's hidden Morse-code signature
 ([Arcade Blogger](https://arcadeblogger.com/2019/06/29/atari-centipedes-hidden-code-trap/)).
