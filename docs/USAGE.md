@@ -161,6 +161,20 @@ genuine and one-line-high port 0), holds the combination in the attract demo, le
 saves one; `--out DIR` changes the folder. It prints the counter it found for each image and exits non-zero
 if one is not what the README says.
 
+`--gif` also writes `NAME.gif` for each case: 2x, about 14 frames a second, with a caption strip under the
+picture naming the buttons held ("Holding P1 Start + Fire + Right", then "Released"). It runs from 1.5 s before
+the buttons go down to 2 s after the counter changes (a nothing-happens case never ends before its still, so the
+CREDIT line is on screen) and holds the last frame for 2 s. The GIFs come from the same run as the stills.
+`ROM_FOLDER` needs `lrescue.zip`, `invadpt2.zip` and, for Moon Lander set 2, a standalone `mlandera.zip`.
+
+```bash
+python3 scripts/eggdemo.py invaders.zip --gif  # taito-cop.png and taito-cop.gif, in the current folder
+python3 scripts/eggdemo.py sstrangr.zip --gif  # hoei-cop.png and hoei-cop.gif
+```
+
+The easter-egg demo takes the zip itself (not a folder), and its GIF has the same caption strip, naming each of
+the two combinations as it is held.
+
 ## Sanity check
 
 ```bash
@@ -215,7 +229,7 @@ trapscan/z80mode.py    Z80 detection, layout and static scan (Taito SJ, Crazy Ba
 trapscan/skiplist.py   name prefixes for --skip-nonarcade
 batch.py               folder -> one Markdown report
 sigsearch.py           byte-search a whole collection for the trap code
-scripts/eggdemo.py     trigger TAITO COP / HOEI COP and save a screenshot
+scripts/eggdemo.py     trigger TAITO COP / HOEI COP and save a screenshot (and with --gif, a GIF)
 scripts/gifutil.py     caption strip and GIF writer used by trapdemo.py
 scripts/trapdemo.py    screenshots (and with --gif, GIFs) of the credit traps firing (or not) in attract mode
 scripts/verify.py      check the README and docs against the real ROMs (about 2 minutes)
