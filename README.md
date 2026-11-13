@@ -243,7 +243,7 @@ Simulating a bootleg in MAME (the copyright changed to "1980 ACME INC", one coin
 |---|---|
 | <img src="docs/img/astdelux-genuine-credits.png" width="360" alt="Asteroids Deluxe, genuine: ©1980 ATARI INC, CREDITS 0"> | <img src="docs/img/astdelux-bootleg-credits.png" width="360" alt="Asteroids Deluxe, copyright changed: ©1980 ACME INC, CREDITS 2"> |
 
-<p align="center"><img src="docs/img/astdelux-bootleg-gameover.gif" width="480" alt="Asteroids Deluxe with the copyright changed: the game ends and PRESS START appears, because the board has just given itself 2 credits"></p>
+<img src="docs/img/astdelux-bootleg-gameover.gif" width="480" alt="Asteroids Deluxe with the copyright changed: the game ends and PRESS START appears, because the board has just given itself 2 credits">
 
 *The changed board at game over: as the initials screen appears, so does PRESS START. The board has just given
 itself 2 credits. Over 42 game overs with the flag set, 12 paid out (the code's chance is 34%); on the genuine board,
@@ -294,6 +294,7 @@ and gives a credit each time the cabinet's slam switch trips. I looked for it in
 wording, and scanned all 112 sets that use Atari's standard coin routine for a slam-switch read that leads to a
 credit. **Not found**: in every one, the slam switch only blocks coins for a moment, and Ms. Pac-Man's board has
 no slam switch at all. That search is what turned up Asteroids Deluxe and Centipede.
+
 Details: [docs/kick-me-hunt.md](docs/kick-me-hunt.md).
 
 ## Bonus: the easter egg that travelled
