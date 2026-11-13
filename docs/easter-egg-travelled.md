@@ -19,8 +19,10 @@ Invaders.
 
 ![Space Invaders: TAITO COP](img/invaders-taito-cop.png) ![Space Stranger: HOEI COP](img/sstrangr-hoei-cop.png)
 
-*Left: Space Invaders. Right: Space Stranger. Both screenshots are from this repo's emulator
-(`scripts/eggdemo.py`).*
+![Space Invaders: the combinations held, then TAITO COP](img/invaders-taito-cop.gif) ![Space Stranger: the combinations held, then HOEI COP](img/sstrangr-hoei-cop.gif)
+
+*Left: Space Invaders. Right: Space Stranger. The screenshots and the GIFs underneath (the held buttons are
+named in the caption strip) are from this repo's emulator (`scripts/eggdemo.py`).*
 
 ## Space Stranger: rebranded, and still working
 
@@ -58,8 +60,8 @@ program runs on a different processor and has no egg.
 ## Try it
 
 ```bash
-python3 scripts/eggdemo.py invaders.zip     # -> taito-cop.png
-python3 scripts/eggdemo.py sstrangr.zip     # -> hoei-cop.png
+python3 scripts/eggdemo.py invaders.zip     # -> taito-cop.png (add --gif for taito-cop.gif)
+python3 scripts/eggdemo.py sstrangr.zip     # -> hoei-cop.png (add --gif for hoei-cop.gif)
 ```
 
 In MAME: start Space Stranger, wait for the demo game, hold P2 Start + Fire + Left until it's taken (a second

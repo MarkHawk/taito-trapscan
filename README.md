@@ -79,8 +79,9 @@ machine.
 | Genuine `lrescue` | Bootleg `desterth` (Destination Earth) |
 |---|---|
 | ![lrescue as shipped: CREDIT 0](docs/img/lrescue-genuine.png) | ![desterth as shipped: CREDIT 03](docs/img/lrescue-desterth.png) |
+| ![lrescue, buttons held then released: the credit counter stays at 0](docs/img/lrescue-genuine.gif) | ![desterth, buttons held then released: the credit counter goes to 03](docs/img/lrescue-desterth.gif) |
 
-*Same buttons (P1 Start + Fire + Right) held in the attract demo, then released once the credit counter changes. Genuine: nothing. Destination Earth: 3 credits. Screenshots from this repo's emulator (`scripts/trapdemo.py`).*
+*Same buttons (P1 Start + Fire + Right) held in the attract demo, then released once the credit counter changes. Genuine: nothing. Destination Earth: 3 credits. Screenshots and GIFs (the second row, with the buttons named underneath) from this repo's emulator (`scripts/trapdemo.py --gif`).*
 
 Details: [docs/lunar-rescue.md](docs/lunar-rescue.md).
 
@@ -160,8 +161,9 @@ Part II hides the same idea more carefully than Lunar Rescue:
 | Genuine wiring (port 0 = `$00`) | One line high (port 0 = `$02`) |
 |---|---|
 | ![Part II, port 0 = 00: CREDIT 0](docs/img/invadpt2-genuine.png) | ![Part II, port 0 = 02: CREDIT 2](docs/img/invadpt2-one-line-high.png) |
+| ![Part II, port 0 = 00, buttons held then released: the credit counter stays at 0](docs/img/invadpt2-genuine.gif) | ![Part II, port 0 = 02, buttons held then released: the credit counter goes to 2](docs/img/invadpt2-one-line-high.gif) |
 
-*`invadpt2`, P1 Start + P2 Start + Fire + Left held in the attract demo and then released: nothing with Taito's wiring, 2 credits with one of the two lines high. The left shot is a later point in the demo (frame 600, once the copyright line is fully drawn). Screenshots from this repo's emulator (`scripts/trapdemo.py`).*
+*`invadpt2`, P1 Start + P2 Start + Fire + Left held in the attract demo and then released: nothing with Taito's wiring, 2 credits with one of the two lines high. The left shot is a later point in the demo (frame 600, once the copyright line is fully drawn). Screenshots and GIFs from this repo's emulator (`scripts/trapdemo.py --gif`).*
 
 The add-on ROM also contains a cleaned-up version of the known Space Invaders "TAITO COP" easter
 egg: it now spells "TAITO CORP", and its first step no longer needs Left and Right held at once.
@@ -184,7 +186,9 @@ Scanning the 149 Taito-family sets in a MAME 0.277 collection and running each L
 
 ![Moon Lander set 2: CREDIT 3](docs/img/lrescue-mlandera.png)
 
-*`mlandera` as shipped, P1 Start + Fire + Right held in the attract demo and then released: 3 credits. Screenshot from this repo's emulator (`scripts/trapdemo.py`).*
+![Moon Lander set 2, buttons held then released: the credit counter goes to 3](docs/img/lrescue-mlandera.gif)
+
+*`mlandera` as shipped, P1 Start + Fire + Right held in the attract demo and then released: 3 credits. Screenshot and GIF from this repo's emulator (`scripts/trapdemo.py --gif`).*
 
 Three pirate copies pay out free games. Two others don't: Rescate Lunar patches the trap out directly, and
 the other Moon Lander set ignores the controls while the game is idle, which blocks it. The two Moon Lander sets
@@ -290,6 +294,12 @@ message changed to **"HOEI COP"**. It still works: hold P2 Start + Fire + Left d
 + Fire. Nichibutsu's **Rolling Crash** kept the egg's code but blanked its message to spaces.
 
 ![Space Stranger: HOEI COP](docs/img/sstrangr-hoei-cop.png)
+
+| Space Invaders | Space Stranger |
+|---|---|
+| ![Space Invaders: the TAITO COP combination, then the message](docs/img/invaders-taito-cop.gif) | ![Space Stranger: the same combination, then HOEI COP](docs/img/sstrangr-hoei-cop.gif) |
+
+*The two button combinations as the emulator runs them, from `scripts/eggdemo.py --gif`.*
 
 Details: [docs/easter-egg-travelled.md](docs/easter-egg-travelled.md).
 
