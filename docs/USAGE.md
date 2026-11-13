@@ -172,6 +172,34 @@ results (credits, `$47E9`, `$419D`, the port-0 reset, Moon Base's dead trap). On
 status is non-zero if any fail, and a set it cannot find counts as a failure. It needs `lrescue.zip`,
 `invadpt2.zip` and `mlandera.zip` in the folder.
 
+## Atari tools (`atari/`)
+
+The Atari findings use MAME itself (tested with 0.264) rather than this repo's 8080 emulator. Each
+script plays the game unattended: it inserts a coin and presses Start every 2 minutes, leaves the controls alone,
+and prints the credit count as it changes.
+
+```bash
+mame astdelux1 -autoboot_script atari/astdelux_trap.lua               # copyright changed to "ACME": the trap
+TAMPER=none mame astdelux1 -autoboot_script atari/astdelux_trap.lua   # genuine board
+mame centiped -autoboot_script atari/centipede_trap.lua               # the two POKEY reads differ by 3
+NOPOKEY=0 mame centiped -autoboot_script atari/centipede_trap.lua     # genuine board
+```
+
+Add `-nothrottle` to run faster than real time, or `-video none -sound none -nothrottle -seconds_to_run 1000` to
+run headless. With `-debug -debugger none`, `astdelux_trap.lua` also logs when the copyright comparison and the
+payout code run. On Windows PowerShell, set variables first: `$env:TAMPER="none"`.
+
+```bash
+python3 atari/verify_atari.py ROM_FOLDER       # needs astdelux.zip and centiped.zip
+python3 atari/slamscan.py ROM_FOLDER -o slamscan.md --csv slamscan.csv
+```
+
+`verify_atari.py` checks every Atari listing in the README and `docs/` byte for byte. `slamscan.py` looks for a
+"kick me" trap: it finds Atari's standard coin routine in each set, then lists every other read of the slam switch
+and every write to the credit count, and flags `SLAM->CREDIT` if a slam read leads to a credit write. Byte-pattern
+search, so it needs no ROM layout: addresses in its report are offsets inside
+each ROM file.
+
 ## Files
 
 ```
@@ -189,6 +217,10 @@ sigsearch.py           byte-search a whole collection for the trap code
 scripts/eggdemo.py     trigger TAITO COP / HOEI COP and save a screenshot
 scripts/trapdemo.py    screenshots of the credit traps firing (or not) in attract mode
 scripts/verify.py      check the README and docs against the real ROMs (about 2 minutes)
+atari/astdelux_trap.lua    MAME script: Asteroids Deluxe rev 1, genuine or copyright changed
+atari/centipede_trap.lua   MAME script: Centipede, genuine POKEY or reads that differ
+atari/verify_atari.py      check the Atari listings against the real ROMs
+atari/slamscan.py          scan Atari 6502 games for a slam-switch credit trap
 docs/                  write-ups and this guide
 ```
 

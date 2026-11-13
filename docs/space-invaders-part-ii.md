@@ -63,8 +63,14 @@ the copper link is visible on the board (or under the chip) needs a look at the 
 Prior knowledge: the reset was identified in 2022 on the Arcade Museum forum (thread "Taito 3 board space invaders
 part 2 bad shifter causes resets?"), described as a guard against swapping Part II ROMs into a Space Invaders board,
 with the fix "NOP out the jp nz,$0000" (it's `JZ $0000` at $45A2 here). The lines are input 0 (pin 10) of the
-74LS153s at 6A/6B on the sound board; one owner's Moon Base Zeta board has them wired straight to pin 8 (GND).
-The thread doesn't mention the one-line-high case that arms the credit trap.
+74LS153s at 6A/6B on the sound board; one owner's Moon Base Zeta board has them wired straight to pin 8 (GND), a
+pin-to-pin link on the chip itself, easy to miss. HudsonArcade's last post says they should be pulled *up* for
+Part II, which doesn't match the schematic notes, that board, or the code's "both high = reset"; unresolved. The
+forum's "6A and 6B on the sound board" and the schematic's "chips 4 and 9" are probably two labelling schemes (board
+grid references against the schematic's position numbers) for the same two 74LS153s, but that isn't confirmed. A
+[UKVAC thread](https://www.ukvac.com/forum/threads/taito-3-pcb-invaders-boardset-resetting.75648/) mentions the same
+"couple of grounds changed for an SI 2 board and a protection check". Neither thread mentions the one-line-high case
+that arms the credit trap.
 
 **Emulator result:** with port 0 = $02 and the combo held during attract → credits 2, game starts.
 Genuine port values → nothing.

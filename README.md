@@ -1,4 +1,4 @@
-# Taito's hidden free credits: anti-bootleg traps in 1979 arcade code
+# Free games for pirates: hidden anti-bootleg credit traps in 1979–80 arcade code
 
 In the 1980s my friend Phil S and I used to play at Bexley Squash Club on Sunday afternoons. The club had an
 arcade machine, and someone there could get free games out of it with a button trick. Forty-odd years later I went
@@ -9,17 +9,37 @@ routines that hand out free credits when you hold a secret button combination in
 **they're designed to work only on copied boards**. On a genuine Taito machine the trap switches
 itself off a few seconds after power-up. On a bootleg, it stays live.
 
-As far as I can find, the free-credit routines haven't been documented before. (Repairers had already
-spotted the reset half of Part II's board check; see below.)
+It wasn't only Taito. Atari's **Asteroids Deluxe** (the first two revisions) quietly gives away 2 credits at
+random game overs once its copyright line has been changed, and **Centipede** adds credits at every game start
+on a board without a genuine POKEY sound chip. Instead of locking up a copied board, these games make it lose
+money for whoever is operating it.
+
+As far as I can find, the free-credit routines in Lunar Rescue, Space Invaders Part II and Asteroids Deluxe
+haven't been documented before. (Repairers had already spotted the reset half of Part II's board check, and
+Centipede's is known; see below.)
 
 ---
 
 ## The short version
 
+| Game | Copy check | What a copied board does | |
+|---|---|---|---|
+| **Lunar Rescue** (Taito, 1979) | the "© TAITO CORPORATION" text has been altered | 3 credits for P1 Start + Fire + Right in attract mode | new |
+| **Space Invaders Part II** (Taito, 1979) | one of two ground links on the board is missing | 2 credits for P1 Start + P2 Start + Fire + Left in attract mode | new |
+| **Asteroids Deluxe**, revisions 1 and 2 (Atari, 1980) | the copyright line has been altered | 2 credits at about 1 game over in 3, on the high-score table | new |
+| **Centipede** (Atari, 1980) | no genuine POKEY sound chip | extra credits at every game start | known |
+
+Every listing here is checked against the real ROMs by `scripts/verify.py` (Taito) and `atari/verify_atari.py`
+(Atari), and every trap is shown working in an emulator, with the genuine board alongside.
+
+---
+
+# Taito, 1979
+
 | Game | Secret combo (attract mode) | Gives | Armed when… |
 |---|---|---|---|
-| **Lunar Rescue** (1979) | P1 Start + Fire + Right | 3 credits | the "© TAITO CORPORATION" text on the title screen has been altered |
-| **Space Invaders Part II** (1979) | P1 Start + P2 Start + Fire + Left | 2 credits | one of two unused input lines on the board reads high (i.e. it isn't running on the expected hardware) |
+| **Lunar Rescue** | P1 Start + Fire + Right | 3 credits | the "© TAITO CORPORATION" text on the title screen has been altered |
+| **Space Invaders Part II** | P1 Start + P2 Start + Fire + Left | 2 credits | one of two unused input lines on the board reads high (i.e. it isn't running on the expected hardware) |
 | Space Invaders Part II, second trap | P1 Start + P2 Start + Fire + Right | nothing (bug) | the game's own ROM has been patched |
 | Space Invaders (1978; MAME's `invaders`, the Midway set) | none | – | no trap, just the known "TAITO COP" easter egg |
 
@@ -61,6 +81,8 @@ machine.
 | ![lrescue as shipped: CREDIT 0](docs/img/lrescue-genuine.png) | ![desterth as shipped: CREDIT 03](docs/img/lrescue-desterth.png) |
 
 *Same buttons (P1 Start + Fire + Right) held in the attract demo, then released once the credit counter changes. Genuine: nothing. Destination Earth: 3 credits. Screenshots from this repo's emulator (`scripts/trapdemo.py`).*
+
+Details: [docs/lunar-rescue.md](docs/lunar-rescue.md).
 
 ## Space Invaders Part II
 
@@ -117,27 +139,19 @@ Part II hides the same idea more carefully than Lunar Rescue:
   high: the trap stays armed.
 
   Taito's own schematic of the I/O board (PV070010, "P.T-GAME P.C. BOARD", from
-  [robotron-2084.co.uk](https://www.robotron-2084.co.uk/hardware/boardset/taito-space-invaders-part-ii-3-layer-board-stack)) confirms it: the port is read
-  through four 74LS153 multiplexers, and every unused input has a 1k pull-up to +5V – except pin 10 of the
-  multiplexers at positions 4 and 9, which also have a **ground link on the same node**. Those are the two lines
-  the code checks. (Bit 1 is on chip 4 and bit 3 on chip 9, matching MAME's notes; chip 9's link also grounds
-  port 1 bit 3, which MAME notes as tied low too.)
-
-  So the check isn't looking for any old difference: it's looking for two specific ground links. A copier who
-  missed both got a board that won't start; one who missed one, or wired it differently, got a board that gives
-  free games. Whether Taito hid those links (under a chip, on the solder side, a jumper wire) or they were
-  ordinary tracks, I can't tell from the code; owners of real Part II boards could check.
+  [robotron-2084.co.uk](https://www.robotron-2084.co.uk/hardware/boardset/taito-space-invaders-part-ii-3-layer-board-stack))
+  confirms it: every unused input of the four 74LS153 multiplexers that read the port has a 1k pull-up to +5V,
+  except the two the code checks, which also have a **ground link on the same node**. So the check is looking for
+  two specific ground links. A copier who missed both got a board that won't start; one who missed one, or wired
+  it differently, got a board that gives free games. Whether Taito hid those links (under a chip, on the solder
+  side, a jumper wire) or they were ordinary tracks, I can't tell from the code; owners of real Part II boards
+  could check.
 
   Repairers already knew the reset half. In a 2022 [Arcade Museum forum thread](https://forums.arcade-museum.com/threads/taito-3-board-space-invaders-part-2-bad-shifter-causes-resets.504475/)
   about a resetting Part II board, HudsonArcade found the check ("it's resetting because the code is telling it
   to"), said it's "specifically to 'prevent' people from swapping ROMs as an upgrade" (Part II ROMs in a plain
-  Space Invaders board), and gave the patch to disable it. The two lines are the "0" inputs (pin 10) of the
-  74LS153s at 6A and 6B on the sound board; on that owner's Moon Base Zeta board they're "wired directly to
-  pin 8 GND" – a pin-to-pin link on the chip itself, easy to miss. (HudsonArcade's last post says they should
-  be pulled *up* for Part II, which doesn't match the schematic notes, that board, or the code's "both high =
-  reset"; unresolved.) The forum's "6A and 6B on the sound board" and the schematic's "chips 4 and 9" are probably two labelling schemes (board grid references against the schematic's position numbers) for the same two 74LS153s, but I haven't confirmed that against the schematic or board photos: unconfirmed. A [UKVAC thread](https://www.ukvac.com/forum/threads/taito-3-pcb-invaders-boardset-resetting.75648/)
-  mentions the same "couple of grounds changed for an SI 2 board and a protection check". What I couldn't find
-  anywhere is the other half: with exactly one line wrong, the check doesn't reset, it arms a free-credit routine.
+  Space Invaders board), and gave the patch to disable it. What I couldn't find anywhere is the other half: with
+  exactly one line wrong, the check doesn't reset, it arms a free-credit routine.
 - **There's a second trap that doesn't work.** It's armed if five bytes of the program ROM have been
   changed, but it reads the controls through a helper that leaves a register pointing at ROM. Its
   "2 credits" are written into read-only memory and vanish. Whether that's a bug or a decoy, it never
@@ -151,6 +165,9 @@ Part II hides the same idea more carefully than Lunar Rescue:
 
 The add-on ROM also contains a cleaned-up version of the known Space Invaders "TAITO COP" easter
 egg: it now spells "TAITO CORP", and its first step no longer needs Left and Right held at once.
+
+Details, including the schematic, chip positions and the repair threads:
+[docs/space-invaders-part-ii.md](docs/space-invaders-part-ii.md).
 
 ## It worked on real bootlegs
 
@@ -184,6 +201,86 @@ match its own changes.
 read-only memory, so nothing pays out. Without the bug, Moon Base would have handed out free games.
 (The second set, `moonbasea`, kept the original bytes, so the trap stays off there.) Full details: [docs/bootleg-results.md](docs/bootleg-results.md).
 
+---
+
+# Atari, 1980
+
+## Asteroids Deluxe: the copyright check that pays out
+
+Asteroids Deluxe keeps **two copies** of its copyright line, "© 1980 ATARI INC". It draws the one at `$7603` on
+screen and never displays the other, at `$7845`. When a game ends with a **new top score**, it redraws the line
+from the hidden copy in a compare-only mode and checks every byte against what's on screen. A bootlegger who put
+their own name in the copyright changed only the copy that is drawn, so the two differ, and a flag at `$91` is set
+for good. Nothing visible happens. From then on, at the end of every game that makes the high-score table:
+
+```
+703B  LDA $91          ; copyright check failed earlier?
+703D  BEQ $704A        ; no -> nothing
+703F  LDA #$55
+7041  CMP $2C0A        ; POKEY random number
+7044  BCC $704A        ; above $55 (about 2 times in 3) -> nothing
+7046  INC $93          ; credits + 1
+7048  INC $93          ; credits + 1
+```
+
+`$93` is the credit count: the coin routine adds to it and Start takes from it, and nothing else writes it. So
+the board pays out at random, only to people who play well, and only after someone has set a top score, which
+makes it far harder to notice than Lunar Rescue's combo.
+
+Simulating a bootleg in MAME (the copyright changed to "1980 ACME INC", one coin per game, the ship left alone):
+
+| Genuine board | Copyright changed |
+|---|---|
+| ![Asteroids Deluxe, genuine: ©1980 ATARI INC, CREDITS 0](docs/img/astdelux-genuine-credits.png) | ![Asteroids Deluxe, copyright changed: ©1980 ACME INC, CREDITS 2](docs/img/astdelux-bootleg-credits.png) |
+
+![Asteroids Deluxe with the copyright changed: the game ends and PRESS START appears, because the board has just given itself 2 credits](docs/img/astdelux-bootleg-gameover.gif)
+
+*The changed board at game over: as the initials screen appears, so does PRESS START. The board has just given
+itself 2 credits. Over 42 game overs with the flag set, 12 paid out (the code's chance is 34%); on the genuine board,
+none of 28 did. Recorded with `atari/astdelux_trap.lua`.*
+
+Atari removed it: revision 2 still has it, revision 3 (MAME's `astdelux`) has none of it. Full listings, the Start
+and coin code, and two further checks I haven't traced: [docs/asteroids-deluxe.md](docs/asteroids-deluxe.md).
+
+## Centipede: free credits without a genuine POKEY
+
+At power-up and at the start of every game, Centipede puts its POKEY sound chip into reset, which freezes the
+chip's random-number register. It then reads that register twice and adds the difference to the credit count:
+
+```
+28A2  LDA $100A        ; POKEY random number
+28A5  EOR $100A        ; ... again: 0 on a genuine POKEY in reset
+28A8  CLC
+28A9  ADC $C8
+28AB  STA $C8          ; credits = credits + difference
+```
+
+This one is known: the commented disassembly at
+[6502disassembly.com](https://6502disassembly.com/va-centipede/Centipede_rev4.html) calls it "add credits if it's
+not a POKEY". What the MAME sets add is the bootleggers' side. **Magic Worm** (the bootleg Atari took to court) and
+**Caterpillar** both replaced the POKEY with a cheaper General Instrument sound chip, and both changed these two
+reads to read the same byte twice (Magic Worm a RAM byte, Caterpillar a ROM byte), so the difference is always 0.
+
+| Genuine POKEY | Random register not frozen |
+|---|---|
+| ![Centipede at power-up, genuine](docs/img/centiped-genuine-powerup.png) | ![Centipede at power-up with the reads differing: CREDITS 3](docs/img/centiped-nopokey-powerup.png) |
+
+*Straight after power-up, before any coin. Recorded with `atari/centipede_trap.lua`, which makes only those two
+reads differ.* Details: [docs/centipede.md](docs/centipede.md).
+
+---
+
+## The "kick me for a free game" story
+
+Ned Batchelder [heard a story](https://nedbatchelder.com/blog/200404/arcade_copy_protection) at General Computer
+(Ms. Pac-Man's developers) in 1982: a game that, if its copyright notice is missing, shows "KICK ME FOR A FREE GAME"
+and gives a credit each time the cabinet's slam switch trips. I looked for it in the games closest to the story
+(Missile Command, General Computer's Super Missile Attack, Ms. Pac-Man), searched every 1975–85 set for the
+wording, and scanned all 112 sets that use Atari's standard coin routine for a slam-switch read that leads to a
+credit. **Not found**: in every one, the slam switch only blocks coins for a moment, and Ms. Pac-Man's board has
+no slam switch at all. That search is what turned up Asteroids Deluxe and Centipede.
+Details: [docs/kick-me-hunt.md](docs/kick-me-hunt.md).
+
 ## Bonus: the easter egg that travelled
 
 Space Invaders' hidden "TAITO COP" message turns up in other companies' games built on Taito's code. In
@@ -202,45 +299,53 @@ also had unmarked Asteroids and Space Firebird machines, two on site at once, wh
 copied boards.
 
 If the machine was a Lunar Rescue copy with the Taito name changed (*Destination Earth* or *Escape from
-Mars*, or the right version of *Moon Lander*, which was a UK bootleg), holding the combo during the attract demo gave free credits, exactly as described above. I can't
-know which board it was, but the memory fits the code, and those copies were real. A cocktail table makes no difference: the trap reads the player 1 controls whatever the cabinet type.
+Mars*, or the right version of *Moon Lander*, which was a UK bootleg), holding the combo during the attract demo
+gave free credits, exactly as described above. I can't know which board it was, but the memory fits the code, and
+those copies were real. A cocktail table makes no difference: the trap reads the player 1 controls whatever the
+cabinet type. (The Asteroids Deluxe trap is in a different game from the club's Asteroids; nothing like it turned
+up in the original Asteroids.)
 
-## Was this Taito policy?
+## Was this policy?
 
-On the evidence so far, it was a 1979 tactic:
+On the evidence so far, it was a tactic of 1979–80, when copied boards were everywhere:
 
-- The original 1978 **Space Invaders** has no trap, only an easter egg.
-- Both 1979 games put the trap in the **add-on ROM at `$4000`**, and tie it to an anti-copy check.
-  That was the moment bootleg Invaders hardware was everywhere.
-- Through the 1980s Taito moved to **hardware protection**: custom microcontrollers the game can't run
-  without. Hiding traps in the code mattered less once copiers had to beat a chip.
-
-Since checked: Balloon Bomber, Lupin III, Polaris, Space Chaser, Indian Battle and Steel Worker (no trap), and
-the Z80 games that followed: Crazy Balloon, Space Cruiser, Space Seeker, Alpine Ski, Wild Western, Jungle King,
-Front Line, Elevator Action (no trap). The Elevator Action bootleg had to patch nine places to run without
-Taito's 68705 protection chip: by 1983 the protection lived in hardware.
+- **Taito:** the original 1978 Space Invaders has no trap, only an easter egg. Both 1979 games put the trap in the
+  **add-on ROM at `$4000`** and tie it to an anti-copy check. Through the 1980s Taito moved to **hardware
+  protection**: custom microcontrollers the game can't run without. Since checked: Balloon Bomber, Lupin III,
+  Polaris, Space Chaser, Indian Battle and Steel Worker (no trap), and the Z80 games that followed: Crazy Balloon,
+  Space Cruiser, Space Seeker, Alpine Ski, Wild Western, Jungle King, Front Line, Elevator Action (no trap). The
+  Elevator Action bootleg had to patch nine places to run without Taito's 68705 protection chip: by 1983 the
+  protection lived in hardware.
+- **Atari:** Centipede (every revision) and the first two revisions of Asteroids Deluxe pay out on copies; Asteroids
+  Deluxe revision 3 drops it. Atari's other tricks of the time were evidence and sabotage rather than payouts:
+  Centipede's hidden Morse-code signature, used in court, and checksums such as Tempest's.
 
 ## How it was found
 
-1. Disassembled the program ROMs: 6502 for Lunar Lander, Intel 8080 for the Taito games. (Atari's Lunar Lander was
+1. Disassembled the program ROMs: Intel 8080 for the Taito games, 6502 for the Atari ones. (Atari's Lunar Lander was
    checked first as a control, an unrelated 1979 game on a 6502, and is clean: see [docs/lunar-lander-clean.md](docs/lunar-lander-clean.md).)
 2. Found the credit counter by inserting coins in the emulator, then traced **every** instruction that writes it.
    Anything other than "coin in" and "start pressed" is suspicious.
-3. Ran the ROMs in a purpose-built 8080 emulator of the Space Invaders board, held the combos, and
+3. Ran the Taito ROMs in a purpose-built 8080 emulator of the Space Invaders board, held the combos, and
    simulated a bootleg by altering one letter of "TAITO". The credits appeared; on the unmodified ROM
    they don't.
 4. Turned the patterns into a scanner, which finds every hidden routine above and, on the original
    Space Invaders, only the known easter egg.
+5. For the Atari games, scanned every set that uses Atari's coin routine (`atari/slamscan.py`), went through every
+   remaining credit write by hand, and confirmed each trap in MAME with Lua scripts that play the game unattended,
+   on a genuine and a simulated bootleg board.
 
 ## Try it yourself
 
-This repo contains the tools: a disassembler, a signature scanner and an emulator, pure Python 3.
-ROMs are not included; use your own MAME sets.
+ROMs are not included; use your own MAME sets (the results here are from MAME 0.277 sets).
+
+**Taito** (pure Python 3: a disassembler, a signature scanner and an 8080 emulator of the Space Invaders board):
 
 ```bash
 python3 trapscan.py scan lrescue.zip invadpt2.zip     # report + disassembly
 python3 trapscan.py run lrescue.zip --frames 1720 --patch 4676=13 \
     --hold start1+fire+right@1600-1700 --watch 20eb     # bootleg simulation -> credits 03
+python3 scripts/verify.py ~/roms                       # check every Taito listing against the ROMs
 ```
 
 In MAME's debugger:
@@ -251,20 +356,20 @@ In MAME's debugger:
   the moment the trap reads it: `bpset 418c,1,{b@20e3=1;g}`. Reset, and hold P1 Start + P2 Start + Fire + Left
   from power-on; the trap runs about 4 seconds in, and the credits go to 2.
 
-To search a whole collection, any manufacturer, for the trap code and its arming checks: `sigsearch.py`.
-See [docs/USAGE.md](docs/USAGE.md).
-
-Scan a whole folder of sets into one report (suspicious sets listed first):
+**Atari** (MAME's Lua scripting; the scripts play by themselves and print the credit count):
 
 ```bash
-python3 batch.py ~/roms -o report.md
+mame astdelux1 -autoboot_script atari/astdelux_trap.lua              # copyright changed: +2 credits at some game overs
+TAMPER=none mame astdelux1 -autoboot_script atari/astdelux_trap.lua  # genuine: never
+mame centiped -autoboot_script atari/centipede_trap.lua              # reads differ: +3 credits per game start
+python3 atari/verify_atari.py ~/roms                                 # check every Atari listing against the ROMs
+python3 atari/slamscan.py ~/roms -o slamscan.md                      # the slam-switch scan
 ```
 
-Full instructions: [docs/USAGE.md](docs/USAGE.md). Sets worth collecting: [docs/ROMLIST.md](docs/ROMLIST.md). Detailed notes with addresses:
+Add `-nothrottle` to run faster than real time. On Windows PowerShell, set the variable first: `$env:TAMPER="none"`.
 
-- [docs/lunar-rescue.md](docs/lunar-rescue.md)
-- [docs/space-invaders-part-ii.md](docs/space-invaders-part-ii.md)
-- [docs/lunar-lander-clean.md](docs/lunar-lander-clean.md)
+To search a whole collection, any manufacturer, for the Taito trap code and its arming checks: `sigsearch.py`.
+Full instructions: [docs/USAGE.md](docs/USAGE.md). Sets worth collecting: [docs/ROMLIST.md](docs/ROMLIST.md).
 
 ## Caveats
 
@@ -274,17 +379,23 @@ Full instructions: [docs/USAGE.md](docs/USAGE.md). Sets worth collecting: [docs/
   so the trap is off there unless you poke the flag. If you have a genuine or bootleg Part II board: are port 0
   bits 1 and 3 (both grounded on Taito's schematic) really tied low on yours, and how is that link made? Does the
   combo work? An issue on this repo with the answer would settle it.
+- The Asteroids Deluxe bootleg is simulated (I don't know of a dumped bootleg of revision 1 or 2 with its copyright
+  changed). Two more checks in that game, one during play and a ROM checksum, are not traced yet.
+- The Centipede demonstration changes only the two reads at the check, to show its effect; a real board without a
+  POKEY would differ in other ways too.
 - "Right" means bit 6 of input port 1, the standard Space Invaders wiring.
-- "Not documented before" means I couldn't find it online, in TCRF, Computer Archeology or the arcade
-  history databases. If you know otherwise, open an issue; I'd love to hear it.
+- "Not documented before" means I couldn't find it online, in TCRF, Computer Archeology, 6502disassembly.com or the
+  arcade history databases. If you know otherwise, open an issue; I'd love to hear it.
 
 ## Prior art
 
 Other anti-copying tricks from the same era that are documented:
 
-- **Atari's Centipede (1981)** hid a data pattern that spells "COPYRIGHT 1980 ATARI" in Morse code once decoded.
-  It does nothing at run time; Atari used it as evidence in court that the bootleg *Magic Worm* was copied
-  from its code ([Arcade Blogger](https://arcadeblogger.com/2019/06/29/atari-centipedes-hidden-code-trap/)).
+- **Centipede (Atari, 1980)** adds credits when its POKEY isn't genuine (above), and hid a data pattern that spells
+  "COPYRIGHT 1980 ATARI" in Morse code once decoded. The Morse pattern does nothing at run time; Atari used it as
+  evidence in court that the bootleg *Magic Worm* was copied from its code
+  ([Arcade Blogger](https://arcadeblogger.com/2019/06/29/atari-centipedes-hidden-code-trap/),
+  [6502disassembly.com](https://6502disassembly.com/va-centipede/Centipede_rev4.html)).
 - **Donkey Kong (1981)** checks part of "NINTENDO" in its copyright line and freezes if it has been changed
   ([TCRF](https://tcrf.net/Donkey_Kong_(Arcade))).
 - **Tempest (1981)**: a buggy anti-piracy checksum in the first revision could award 40 free credits; Atari
@@ -296,19 +407,22 @@ Other anti-copying tricks from the same era that are documented:
   the two lines are tied low on Taito's schematic. The credit trap behind the same check hasn't been described.
 - **Space Dungeon (Taito America, 1981)** has an untriggered message, "STOLEN FROM THE GOOD BUDDY'S AT TAITO
   BY AN UNAUTHORIZED DO BADDER" ([TCRF](https://new.tcrf.net/Space_Dungeon)).
-- A story from General Computer (Ms. Pac-Man's developers): a scheme that checked the screen for the copyright
-  notice and, if missing, showed "KICK ME FOR A FREE GAME" and paid a credit for each kick
-  ([Ned Batchelder](https://nedbatchelder.com/blog/200404/arcade_copy_protection), told second-hand).
+- General Computer's "kick me for a free game" story, told second-hand
+  ([Ned Batchelder](https://nedbatchelder.com/blog/200404/arcade_copy_protection)); not found, see above.
 
-What's different here: the Lunar Rescue and Part II traps actually run, they're tied to a copy check, and the
-Lunar Rescue one pays out on real bootlegs (Destination Earth, Escape from Mars, one version of Moon Lander).
+What's different here: the Lunar Rescue, Part II and Asteroids Deluxe traps actually run, they're tied to a copy
+check, and the Lunar Rescue one pays out on real bootlegs (Destination Earth, Escape from Mars, one version of Moon
+Lander).
 
 ## References
 
 - [The Cutting Room Floor: Space Invaders (Arcade)](https://new.tcrf.net/Space_Invaders_(Arcade)), the "TAITO COP" easter egg
 - [Computer Archeology: Space Invaders](https://www.computerarcheology.com/Arcade/SpaceInvaders/), hardware and original code
+- [6502disassembly.com: Centipede](https://6502disassembly.com/va-centipede/Centipede_rev4.html), commented disassembly
 - [arcade-history.com: Lunar Rescue](https://www.arcade-history.com/game/1418/)
 - [MAME machine data: Space Invaders Part II](https://data.spludlow.co.uk/mame/machine/invadpt2)
+- MAME's driver sources (`8080bw.cpp`, `asteroid.cpp`, `centiped.cpp`, `pokey.cpp`), for memory maps, inputs and
+  POKEY behaviour
 - [List of Taito games (Wikipedia)](https://en.wikipedia.org/wiki/List_of_Taito_games)
 - [robotron-2084.co.uk: Taito Space Invaders Part II 3-layer board stack](https://www.robotron-2084.co.uk/hardware/boardset/taito-space-invaders-part-ii-3-layer-board-stack), board photos and Taito's
   schematics (CPU AA017757, ROM AA017756A, I/O and sound PV070010) – thanks for making them available
