@@ -198,8 +198,8 @@ class Board:
                 c.step()
             c.interrupt(half)
         s.frame += 1
-    def screenshot(s, path, marks=()):
-        """Save the screen upright (needs Pillow). marks: video RAM addresses to box in red."""
+    def image(s, marks=()):
+        """The screen upright as a 224x256 RGB Pillow image (needs Pillow). marks: video RAM addresses to box in red."""
         from PIL import Image, ImageDraw
         m = s.cpu.m
         img = Image.new('RGB', (224, 256)); px = img.load()
@@ -211,4 +211,8 @@ class Board:
         for a in marks:
             i = a - 0x2400; x = i // 32; yb = i % 32
             d.rectangle([x - 1, 255 - (yb * 8 + 7) - 1, x + 1, 255 - yb * 8 + 1], outline=(255, 0, 0))
-        img.resize((448, 512), Image.NEAREST).save(path)
+        return img
+    def screenshot(s, path, marks=()):
+        """Save the screen upright, doubled, nearest-neighbour (needs Pillow). marks: video RAM addresses to box in red."""
+        from PIL import Image
+        s.image(marks).resize((448, 512), Image.NEAREST).save(path)

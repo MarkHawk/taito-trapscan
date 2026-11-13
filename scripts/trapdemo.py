@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Screenshots of the credit traps firing (or not) in attract mode, from trapscan's own emulator.
 
-  python3 scripts/trapdemo.py ROM_FOLDER [--out DIR] [--only NAME]     # ROM_FOLDER required; DIR default docs/img
+  python3 scripts/trapdemo.py ROM_FOLDER [--out DIR] [--only NAME] [--gif]    # ROM_FOLDER required; DIR default docs/img
 
 For each case it runs the set, holds the combination in the attract demo, watches the credit counter ($20EB) and
 lets go as soon as it first changes (a held Start 1 would begin a game and spend a credit), then saves a screenshot
@@ -13,6 +13,11 @@ the same frame as the case it is compared with. Images are 448x512: the 224x256 
   lrescue-mlandera.png       mlandera as shipped, same buttons: CREDIT 03
   invadpt2-genuine.png       invadpt2 with port 0 = $00, Start 1 + Start 2 + Fire + Left: nothing, CREDIT 00
   invadpt2-one-line-high.png invadpt2 with port 0 = $02 (the board reads one line high): CREDIT 02
+
+--gif also writes NAME.gif for each case (same names): 2x, 15 emulator frames in 4 (about 14 fps), a caption strip
+under the picture ("Holding P1 Start + Fire + Right", then "Released"), from 1.5 s before the combination is pressed
+to 2 s after the credit counter changes, the last frame held for 2 s. It comes from the same run as the still; a
+"nothing happens" case uses the armed case's frames.
 """
 import argparse
 import os
@@ -22,7 +27,9 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..'))
 from trapscan.romload import load            # noqa: E402
 from trapscan.emu8080 import Board           # noqa: E402
+import gifutil                               # noqa: E402
 
+LABEL = {'coin': 'Coin', 'start2': 'P2 Start', 'start1': 'P1 Start', 'fire': 'Fire', 'left': 'Left', 'right': 'Right'}
 BTN = {'coin': 0x01, 'start2': 0x02, 'start1': 0x04, 'fire': 0x10, 'left': 0x20, 'right': 0x40}
 LR_COMBO = ('start1+fire+right', 1000, 2500)
 IP_COMBO = ('start1+start2+fire+left', 200, 260)
@@ -100,11 +107,25 @@ def find_shot(name, folder, zipname, clone, port0, combo, upto, like=None):
     return change, None, change
 
 
-def shoot(folder, zipname, clone, port0, combo, upto, release, shot, path):
+def shoot(folder, zipname, clone, port0, combo, upto, release, shot, path, gif=None, window=None):
+    """Save the still at frame `shot`; with `gif` (a path) and `window` (first, last emulator frame) also write the
+    GIF from the same run. Returns the credit counter at the still."""
+    spec, f0, f1 = combo
+    held_text = 'Holding ' + ' + '.join(LABEL[k] for k in spec.split('+'))
+    frames, cr = [], None
     for f, b in play(folder, zipname, clone, port0, combo, upto, release):
+        if gif and window[0] <= f <= window[1] and (window[1] - f) % gifutil.STEP == 0:
+            held = f0 <= f < f1 and f <= release
+            text = held_text if held else ('Released' if f >= f0 else 'No buttons held')
+            frames.append(gifutil.frame(b, text))
         if f == shot:
             b.screenshot(path)
-            return b.cpu.m[0x20EB]
+            cr = b.cpu.m[0x20EB]
+        if f >= max(shot, window[1] if gif else 0):
+            break
+    if gif:
+        gifutil.save(frames, gif)
+    return cr
 
 
 def main():
@@ -112,6 +133,7 @@ def main():
     ap.add_argument('folder', help='MAME ROM folder (required)')
     ap.add_argument('--out', default=os.path.join(HERE, '..', 'docs', 'img'), help='output folder (default docs/img)')
     ap.add_argument('--only', help='one case name, e.g. lrescue-mlandera')
+    ap.add_argument('--gif', action='store_true', help='also write a short captioned GIF for each case')
     args = ap.parse_args()
     folder = os.path.expanduser(args.folder)
     os.makedirs(args.out, exist_ok=True)
@@ -121,13 +143,19 @@ def main():
             change, shot, release = find_shot(name, folder, zipname, clone, port0, combo, upto, found.get(like))
             if shot is None:
                 print(f'BAD {name}: no suitable frame found'); bad += 1; continue
-            found[name] = (change, shot, release)
+            found[name] = (change if change is not None or like is None else found[like][0], shot, release)
             if args.only not in (None, name):
                 continue                      # only needed to give a later case its frame
             path = os.path.join(args.out, name + '.png')
-            cr = shoot(folder, zipname, clone, port0, combo, upto, release, shot, path)
+            gif = window = None
+            if args.gif:
+                gif = os.path.join(args.out, name + '.gif')
+                window = (max(0, combo[1] - 90), found[name][0] + 120)   # the armed case's change frame, for a nothing-happens case
+            cr = shoot(folder, zipname, clone, port0, combo, upto, release, shot, path, gif, window)
             bad += cr != want
             when = f'counter changed at frame {change}, ' if change is not None else ''
+            if gif:
+                print(f'     GIF {os.path.normpath(gif)} ({os.path.getsize(gif) // 1024} KB)')
             print(f'{"ok  " if cr == want else "BAD "}{name}: {when}saved frame {shot}, $20EB = {cr:02X} (expected {want:02X}) -> {os.path.normpath(path)}')
         except (OSError, ValueError, KeyError) as ex:
             print(f'{name}: {ex}'); bad += 1

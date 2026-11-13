@@ -152,6 +152,7 @@ the board check clears the flag again and again in attract mode, so set it as th
 
 ```bash
 python3 scripts/trapdemo.py ROM_FOLDER         # needs Pillow; ROM_FOLDER is required; writes docs/img/
+python3 scripts/trapdemo.py ROM_FOLDER --gif   # also a short captioned GIF per case (same names)
 ```
 
 Runs the five cases shown in the README (genuine and bootleg Lunar Rescue, Moon Lander set 2, Part II with
@@ -215,7 +216,8 @@ trapscan/skiplist.py   name prefixes for --skip-nonarcade
 batch.py               folder -> one Markdown report
 sigsearch.py           byte-search a whole collection for the trap code
 scripts/eggdemo.py     trigger TAITO COP / HOEI COP and save a screenshot
-scripts/trapdemo.py    screenshots of the credit traps firing (or not) in attract mode
+scripts/gifutil.py     caption strip and GIF writer used by trapdemo.py
+scripts/trapdemo.py    screenshots (and with --gif, GIFs) of the credit traps firing (or not) in attract mode
 scripts/verify.py      check the README and docs against the real ROMs (about 2 minutes)
 atari/astdelux_trap.lua    MAME script: Asteroids Deluxe rev 1, genuine or copyright changed
 atari/centipede_trap.lua   MAME script: Centipede, genuine POKEY or reads that differ
