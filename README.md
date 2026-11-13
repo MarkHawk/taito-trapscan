@@ -1,4 +1,4 @@
-# Free games for pirates: hidden anti-bootleg credit traps in 1979–80 arcade code
+# Bootleg boards that gave away free games: hidden anti-piracy traps in 1979–80 arcade code
 
 In the 1980s my friend Phil S was a member of Bexley Squash Club, and on Sunday afternoons we'd go there to play the arcade machines. On one of them, someone could get free games with a button trick. Forty-odd years later I went looking for it in the code.
 
