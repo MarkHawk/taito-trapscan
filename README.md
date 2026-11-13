@@ -1,8 +1,6 @@
 # Free games for pirates: hidden anti-bootleg credit traps in 1979–80 arcade code
 
-In the 1980s my friend Phil S and I used to play at Bexley Squash Club on Sunday afternoons. The club had an
-arcade machine, and someone there could get free games out of it with a button trick. Forty-odd years later I went
-looking for it in the code.
+In the 1980s my friend Phil S was a member of Bexley Squash Club, and on Sunday afternoons we'd go there to play the arcade machines. On one of them, someone could get free games with a button trick. Forty-odd years later I went looking for it in the code.
 
 It's real. Two Taito games from 1979, **Lunar Rescue** and **Space Invaders Part II**, contain hidden
 routines that hand out free credits when you hold a secret button combination in attract mode, and
