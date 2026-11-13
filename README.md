@@ -193,10 +193,12 @@ All six Space Invaders Part II sets carry their trap too; Midway's *Space Invade
 match its own changes.
 
 **Moon Base Zeta** (`moonbase`, Taito / Nichibutsu) is the near miss. It changed the five ROM bytes that Part II's
-*second* trap checks, without updating the check, so that trap switches on, and in the emulator the combo
+*second* trap checks, without updating the check. So that trap switches on, and in the emulator the combo
 (P1 Start + P2 Start + Fire + Right) is accepted. But that trap has Taito's bug: it writes the "2 credits" into
 read-only memory, so nothing pays out. Without the bug, Moon Base would have handed out free games.
-(The second set, `moonbasea`, kept the original bytes, so the trap stays off there.) Full details: [docs/bootleg-results.md](docs/bootleg-results.md).
+(The second set, `moonbasea`, kept the original bytes, so the trap stays off there.)
+
+Details: [docs/bootleg-results.md](docs/bootleg-results.md).
 
 ### So what was going on at the squash club?
 
@@ -208,7 +210,7 @@ If the machine was a Lunar Rescue copy with the Taito name changed (*Destination
 Mars*, or the right version of *Moon Lander*, which was a UK bootleg), holding the combo during the attract demo
 gave free credits, exactly as described above. I can't know which board it was, but the memory fits the code, and
 those copies were real. A cocktail table makes no difference: the trap reads the player 1 controls whatever the
-cabinet type. (The Asteroids Deluxe trap is in a different game from the club's Asteroids; nothing like it turned
+cabinet type. (Atari's Asteroids Deluxe trap, below, is in a different game from the club's Asteroids; nothing like it turned
 up in the original Asteroids.)
 
 ---
@@ -249,8 +251,7 @@ Simulating a bootleg in MAME (the copyright changed to "1980 ACME INC", one coin
 itself 2 credits. Over 42 game overs with the flag set, 12 paid out (the code's chance is 34%); on the genuine board,
 none of 28 did. Made with `atari/astdelux_trap.lua`.*
 
-Atari removed it: revision 2 still has it, revision 3 (MAME's `astdelux`) has none of it. Full listings, the Start
-and coin code, and two further checks I haven't traced are in the details.
+Atari removed it: revision 2 still has it, revision 3 (MAME's `astdelux`) has none of it. The details page has the full listings, the Start and coin code, and two further checks I haven't traced yet.
 
 Details: [docs/asteroids-deluxe.md](docs/asteroids-deluxe.md).
 
