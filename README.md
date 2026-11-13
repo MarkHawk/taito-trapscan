@@ -12,9 +12,10 @@ random game overs once its copyright line has been changed, and **Centipede** ad
 on a board without a genuine POKEY sound chip. Instead of locking up a copied board, these games make it lose
 money for whoever is operating it.
 
-As far as I can find, the free-credit routines in Lunar Rescue, Space Invaders Part II and Asteroids Deluxe
-haven't been documented before. (Repairers had already spotted the reset half of Part II's board check, and
-Centipede's is known; see below.)
+> [!NOTE]
+> **As far as I can find, the free-credit routines in Lunar Rescue, Space Invaders
+> Part II and Asteroids Deluxe haven't been documented before.** Repairers had already
+> spotted the reset half of Part II's board check, and Centipede's is known; see below.
 
 ## The short version
 
