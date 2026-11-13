@@ -16,7 +16,7 @@ the same frame as the case it is compared with. Images are 448x512: the 224x256 
 
 --gif also writes NAME.gif for each case (same names): 2x, 15 emulator frames in 4 (about 14 fps), a caption strip
 under the picture ("Holding P1 Start + Fire + Right", then "Released"), from 1.5 s before the combination is pressed
-to 2 s after the credit counter changes, the last frame held for 2 s. It comes from the same run as the still; a
+to 2 s after the credit counter changes (and never before the still, so the CREDIT line is on screen), the last frame held for 2 s. It comes from the same run as the still; a
 "nothing happens" case uses the armed case's frames.
 """
 import argparse
@@ -150,7 +150,7 @@ def main():
             gif = window = None
             if args.gif:
                 gif = os.path.join(args.out, name + '.gif')
-                window = (max(0, combo[1] - 90), found[name][0] + 120)   # the armed case's change frame, for a nothing-happens case
+                window = (max(0, combo[1] - 90), max(found[name][0] + 120, shot + 30))   # the armed case's change frame for a nothing-happens case; never end before the still
             cr = shoot(folder, zipname, clone, port0, combo, upto, release, shot, path, gif, window)
             bad += cr != want
             when = f'counter changed at frame {change}, ' if change is not None else ''
