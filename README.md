@@ -18,8 +18,6 @@ As far as I can find, the free-credit routines in Lunar Rescue, Space Invaders P
 haven't been documented before. (Repairers had already spotted the reset half of Part II's board check, and
 Centipede's is known; see below.)
 
----
-
 ## The short version
 
 | Game | Copy check | What a copied board does | |
@@ -34,7 +32,7 @@ Every listing here is checked against the real ROMs by `scripts/verify.py` (Tait
 
 ---
 
-# Taito, 1979
+## Taito, 1979
 
 | Game | Secret combo (attract mode) | Gives | Armed when… |
 |---|---|---|---|
@@ -45,7 +43,7 @@ Every listing here is checked against the real ROMs by `scripts/verify.py` (Tait
 
 Combos must be exact: the other buttons have to be released, or nothing happens.
 
-## Lunar Rescue
+### Lunar Rescue
 
 The game keeps its credit count in RAM at `$20EB`. Besides the normal coin and start-button code,
 there's one more place that writes it, tucked into the extra ROM at `$4000`:
@@ -78,14 +76,13 @@ machine.
 
 | Genuine `lrescue` | Bootleg `desterth` (Destination Earth) |
 |---|---|
-| ![lrescue as shipped: CREDIT 0](docs/img/lrescue-genuine.png) | ![desterth as shipped: CREDIT 03](docs/img/lrescue-desterth.png) |
-| ![lrescue, buttons held then released: the credit counter stays at 0](docs/img/lrescue-genuine.gif) | ![desterth, buttons held then released: the credit counter goes to 03](docs/img/lrescue-desterth.gif) |
+| <img src="docs/img/lrescue-genuine.gif" width="360" alt="lrescue, buttons held then released: the credit counter stays at 0"> | <img src="docs/img/lrescue-desterth.gif" width="360" alt="desterth, buttons held then released: the credit counter goes to 03"> |
 
-*Same buttons (P1 Start + Fire + Right) held in the attract demo, then released once the credit counter changes. Genuine: nothing. Destination Earth: 3 credits. Screenshots and GIFs (the second row, with the buttons named underneath) from this repo's emulator (`scripts/trapdemo.py --gif`).*
+*Same buttons (P1 Start + Fire + Right) held in the attract demo, then released once the credit counter changes. Genuine: nothing. Destination Earth: 3 credits. Made with `scripts/trapdemo.py --gif`.*
 
 Details: [docs/lunar-rescue.md](docs/lunar-rescue.md).
 
-## Space Invaders Part II
+### Space Invaders Part II
 
 Part II's trap is also in the extra ROM at `$4000`:
 
@@ -160,10 +157,9 @@ Part II hides the same idea more carefully than Lunar Rescue:
 
 | Genuine wiring (port 0 = `$00`) | One line high (port 0 = `$02`) |
 |---|---|
-| ![Part II, port 0 = 00: CREDIT 0](docs/img/invadpt2-genuine.png) | ![Part II, port 0 = 02: CREDIT 2](docs/img/invadpt2-one-line-high.png) |
-| ![Part II, port 0 = 00, buttons held then released: the credit counter stays at 0](docs/img/invadpt2-genuine.gif) | ![Part II, port 0 = 02, buttons held then released: the credit counter goes to 2](docs/img/invadpt2-one-line-high.gif) |
+| <img src="docs/img/invadpt2-genuine.gif" width="360" alt="Part II, port 0 = 00, buttons held then released: the credit counter stays at 0"> | <img src="docs/img/invadpt2-one-line-high.gif" width="360" alt="Part II, port 0 = 02, buttons held then released: the credit counter goes to 2"> |
 
-*`invadpt2`, P1 Start + P2 Start + Fire + Left held in the attract demo and then released: nothing with Taito's wiring, 2 credits with one of the two lines high. The left shot is a later point in the demo (frame 600, once the copyright line is fully drawn). Screenshots and GIFs from this repo's emulator (`scripts/trapdemo.py --gif`).*
+*`invadpt2`, P1 Start + P2 Start + Fire + Left held in the attract demo and then released: nothing with Taito's wiring, 2 credits with one of the two lines high. Made with `scripts/trapdemo.py --gif`.*
 
 The add-on ROM also contains a cleaned-up version of the known Space Invaders "TAITO COP" easter
 egg: it now spells "TAITO CORP", and its first step no longer needs Left and Right held at once.
@@ -171,7 +167,7 @@ egg: it now spells "TAITO CORP", and its first step no longer needs Left and Rig
 Details, including the schematic, chip positions and the repair threads:
 [docs/space-invaders-part-ii.md](docs/space-invaders-part-ii.md).
 
-## It worked on real bootlegs
+### It worked on real bootlegs
 
 Scanning the 149 Taito-family sets in a MAME 0.277 collection and running each Lunar Rescue copy in the emulator:
 
@@ -184,11 +180,9 @@ Scanning the 149 Taito-family sets in a MAME 0.277 collection and running each L
 | Rescate Lunar (`resclunar`) | Niemer S.A. (Spain) | disabled: `RZ`→`RET` at `$47E6`, plus its own ROM checksum |
 | Lunar Rescue Model Racing / Artic copies, Galaxy Rescue | various | switched off: Taito copyright left intact |
 
-![Moon Lander set 2: CREDIT 3](docs/img/lrescue-mlandera.png)
+<img src="docs/img/lrescue-mlandera.gif" width="360" alt="Moon Lander set 2, buttons held then released: the credit counter goes to 3">
 
-![Moon Lander set 2, buttons held then released: the credit counter goes to 3](docs/img/lrescue-mlandera.gif)
-
-*`mlandera` as shipped, P1 Start + Fire + Right held in the attract demo and then released: 3 credits. Screenshot and GIF from this repo's emulator (`scripts/trapdemo.py --gif`).*
+*`mlandera` as shipped, P1 Start + Fire + Right held in the attract demo and then released: 3 credits. Made with `scripts/trapdemo.py --gif`.*
 
 Three pirate copies pay out free games. Two others don't: Rescate Lunar patches the trap out directly, and
 the other Moon Lander set ignores the controls while the game is idle, which blocks it. The two Moon Lander sets
@@ -200,16 +194,29 @@ All six Space Invaders Part II sets carry their trap too; Midway's *Space Invade
 match its own changes.
 
 **Moon Base Zeta** (`moonbase`, Taito / Nichibutsu) is the near miss. It changed the five ROM bytes that Part II's
-*second* trap checks, without updating the check – so that trap switches on, and in the emulator the combo
+*second* trap checks, without updating the check, so that trap switches on, and in the emulator the combo
 (P1 Start + P2 Start + Fire + Right) is accepted. But that trap has Taito's bug: it writes the "2 credits" into
 read-only memory, so nothing pays out. Without the bug, Moon Base would have handed out free games.
 (The second set, `moonbasea`, kept the original bytes, so the trap stays off there.) Full details: [docs/bootleg-results.md](docs/bootleg-results.md).
 
+### So what was going on at the squash club?
+
+The machine was an unmarked cocktail table: no maker's name, a very generic cabinet. Around the same time the club
+also had unmarked Asteroids and Space Firebird machines, two on site at once, which sounds like an operator buying
+copied boards.
+
+If the machine was a Lunar Rescue copy with the Taito name changed (*Destination Earth* or *Escape from
+Mars*, or the right version of *Moon Lander*, which was a UK bootleg), holding the combo during the attract demo
+gave free credits, exactly as described above. I can't know which board it was, but the memory fits the code, and
+those copies were real. A cocktail table makes no difference: the trap reads the player 1 controls whatever the
+cabinet type. (The Asteroids Deluxe trap is in a different game from the club's Asteroids; nothing like it turned
+up in the original Asteroids.)
+
 ---
 
-# Atari, 1980
+## Atari, 1980
 
-## Asteroids Deluxe: the copyright check that pays out
+### Asteroids Deluxe: the copyright check that pays out
 
 Asteroids Deluxe keeps **two copies** of its copyright line, "© 1980 ATARI INC". It draws the one at `$7603` on
 screen and never displays the other, at `$7845`. When a game ends with a **new top score**, it redraws the line
@@ -235,18 +242,20 @@ Simulating a bootleg in MAME (the copyright changed to "1980 ACME INC", one coin
 
 | Genuine board | Copyright changed |
 |---|---|
-| ![Asteroids Deluxe, genuine: ©1980 ATARI INC, CREDITS 0](docs/img/astdelux-genuine-credits.png) | ![Asteroids Deluxe, copyright changed: ©1980 ACME INC, CREDITS 2](docs/img/astdelux-bootleg-credits.png) |
+| <img src="docs/img/astdelux-genuine-credits.png" width="360" alt="Asteroids Deluxe, genuine: ©1980 ATARI INC, CREDITS 0"> | <img src="docs/img/astdelux-bootleg-credits.png" width="360" alt="Asteroids Deluxe, copyright changed: ©1980 ACME INC, CREDITS 2"> |
 
-![Asteroids Deluxe with the copyright changed: the game ends and PRESS START appears, because the board has just given itself 2 credits](docs/img/astdelux-bootleg-gameover.gif)
+<p align="center"><img src="docs/img/astdelux-bootleg-gameover.gif" width="480" alt="Asteroids Deluxe with the copyright changed: the game ends and PRESS START appears, because the board has just given itself 2 credits"></p>
 
 *The changed board at game over: as the initials screen appears, so does PRESS START. The board has just given
 itself 2 credits. Over 42 game overs with the flag set, 12 paid out (the code's chance is 34%); on the genuine board,
-none of 28 did. Recorded with `atari/astdelux_trap.lua`.*
+none of 28 did. Made with `atari/astdelux_trap.lua`.*
 
 Atari removed it: revision 2 still has it, revision 3 (MAME's `astdelux`) has none of it. Full listings, the Start
-and coin code, and two further checks I haven't traced: [docs/asteroids-deluxe.md](docs/asteroids-deluxe.md).
+and coin code, and two further checks I haven't traced are in the details.
 
-## Centipede: free credits without a genuine POKEY
+Details: [docs/asteroids-deluxe.md](docs/asteroids-deluxe.md).
+
+### Centipede: free credits without a genuine POKEY
 
 At power-up and at the start of every game, Centipede puts its POKEY sound chip into reset, which freezes the
 chip's random-number register. It then reads that register twice and adds the difference to the credit count:
@@ -268,10 +277,12 @@ two more bootlegs left it alone.
 
 | Genuine POKEY | Random register not frozen |
 |---|---|
-| ![Centipede at power-up, genuine](docs/img/centiped-genuine-powerup.png) | ![Centipede at power-up with the reads differing: CREDITS 3](docs/img/centiped-nopokey-powerup.png) |
+| <img src="docs/img/centiped-genuine-powerup.png" width="360" alt="Centipede at power-up, genuine"> | <img src="docs/img/centiped-nopokey-powerup.png" width="360" alt="Centipede at power-up with the reads differing: CREDITS 3"> |
 
-*Straight after power-up, before any coin. Recorded with `atari/centipede_trap.lua`, which makes only those two
-reads differ.* Details: [docs/centipede.md](docs/centipede.md).
+*Straight after power-up, before any coin. Made with `atari/centipede_trap.lua`, which makes only those two
+reads differ.*
+
+Details: [docs/centipede.md](docs/centipede.md).
 
 ---
 
@@ -293,28 +304,13 @@ Space Invaders' hidden "TAITO COP" message turns up in other companies' games bu
 message changed to **"HOEI COP"**. It still works: hold P2 Start + Fire + Left during the demo, then P1 Start
 + Fire. Nichibutsu's **Rolling Crash** kept the egg's code but blanked its message to spaces.
 
-![Space Stranger: HOEI COP](docs/img/sstrangr-hoei-cop.png)
-
 | Space Invaders | Space Stranger |
 |---|---|
-| ![Space Invaders: the TAITO COP combination, then the message](docs/img/invaders-taito-cop.gif) | ![Space Stranger: the same combination, then HOEI COP](docs/img/sstrangr-hoei-cop.gif) |
+| <img src="docs/img/invaders-taito-cop.gif" width="360" alt="Space Invaders: the TAITO COP combination, then the message"> | <img src="docs/img/sstrangr-hoei-cop.gif" width="360" alt="Space Stranger: the same combination, then HOEI COP"> |
 
-*The two button combinations as the emulator runs them, from `scripts/eggdemo.py --gif`.*
+*The two button combinations as the emulator runs them. Made with `scripts/eggdemo.py --gif`.*
 
 Details: [docs/easter-egg-travelled.md](docs/easter-egg-travelled.md).
-
-## So what was going on at the squash club?
-
-The machine was an unmarked cocktail table: no maker's name, a very generic cabinet. Around the same time the club
-also had unmarked Asteroids and Space Firebird machines, two on site at once, which sounds like an operator buying
-copied boards.
-
-If the machine was a Lunar Rescue copy with the Taito name changed (*Destination Earth* or *Escape from
-Mars*, or the right version of *Moon Lander*, which was a UK bootleg), holding the combo during the attract demo
-gave free credits, exactly as described above. I can't know which board it was, but the memory fits the code, and
-those copies were real. A cocktail table makes no difference: the trap reads the player 1 controls whatever the
-cabinet type. (The Asteroids Deluxe trap is in a different game from the club's Asteroids; nothing like it turned
-up in the original Asteroids.)
 
 ## Was this policy?
 
@@ -436,7 +432,7 @@ Lander).
   POKEY behaviour
 - [List of Taito games (Wikipedia)](https://en.wikipedia.org/wiki/List_of_Taito_games)
 - [robotron-2084.co.uk: Taito Space Invaders Part II 3-layer board stack](https://www.robotron-2084.co.uk/hardware/boardset/taito-space-invaders-part-ii-3-layer-board-stack), board photos and Taito's
-  schematics (CPU AA017757, ROM AA017756A, I/O and sound PV070010) – thanks for making them available
+  schematics (CPU AA017757, ROM AA017756A, I/O and sound PV070010); thanks for making them available
 - Arcade Museum forum (HudsonArcade, Lurch666 and others) and UKVAC, for the repair-side knowledge of Part II's
   board check
 
